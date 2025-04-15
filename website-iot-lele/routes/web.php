@@ -25,3 +25,19 @@ Route::put('kolam/{id_pond}/deactivate', [PondController::class, 'deactivate'])-
 
 //Section Riwayat
 Route::get('/riwayat', [PondController::class, 'deactivatedPonds'])->name('riwayat.deactivated');
+
+use Illuminate\Http\Request;
+use App\Models\SensorData;
+
+Route::post('/insert', function (Request $request) {
+    $validated = $request->validate([
+        'suhu' => 'required|numeric',
+        'ph' => 'required|numeric',
+        'tds' => 'required|numeric',
+        'tinggi' => 'required|numeric',
+    ]);
+
+    SensorData::create($validated);
+
+    return response()->json(['status' => 'Data berhasil disimpan']);
+})->withoutMiddleware(['web']);
