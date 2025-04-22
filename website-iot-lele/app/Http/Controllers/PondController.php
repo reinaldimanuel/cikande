@@ -13,9 +13,17 @@ use View;
 
 class PondController extends Controller
 {
-    public function index() {
-        $ponds = Pond::where('status_pond', 'Active')->orderBy('created_at', 'asc')->get();
-        return view('pond', compact('ponds'));
+    public function index(Request $request) {
+        $query = Pond::where('status_pond', 'Active');
+
+        if ($request->has('search')) {
+            $query->where('name_pond', 'like', '%' . $request->search . '%');
+        }
+
+        $ponds = $query->orderBy('name_pond')->get();
+
+
+        return view('app-pond', compact('ponds'));
     }
 
     public function show($id_pond){
@@ -34,7 +42,7 @@ class PondController extends Controller
 
         $feeder = Feeder::where('id_pond', $id_pond)->first();
 
-        return view('ponddetail', compact('pond', 'sensorReadings', 'settings','schedules','histories','feeder'));
+        return view('app-ponddetail', compact('pond', 'sensorReadings', 'settings','schedules','histories','feeder'));
     }
 
     public function store(Request $request) {
@@ -62,6 +70,11 @@ class PondController extends Controller
             'min_salinity'     => 0.1,   // Minimum Salinity (ppt)
             'max_salinity'     => 35.0   // Maximum Salinity (ppt)
         ]);
+
+        Feeder::create([
+            'id_pond' => $pond->id_pond,
+            'feeder_status' => 'Kosong'
+        ]);        
     
         return redirect()->route('kolam.index')->with('success', 'Kolam berhasil ditambahkan!');
     }
@@ -73,19 +86,16 @@ class PondController extends Controller
         return redirect()->route('kolam.index')->with('success', 'Berhasil, data kolam telah diperbarui!');
     }
 
-    public function deactivate($id_pond) {
+    public function deactivate(Request $request, $id_pond) {
+
         $pond = Pond::findOrFail($id_pond);
-        $pond->update([
-        'status_pond' => 'Deactive'
-        ]);
+    
+        $pond->status_pond = 'Deactive';
+        $pond->deact_reason = $request->input('deact_reason');
+        $pond->age_fish = $request->input('age_fish');
+        $pond->save();
 
         return redirect()->route('kolam.index')->with('success', 'Kolam dihapus!');
-    }
-
-    public function deactivatedPonds()
-    {
-        $deactivatedPonds = Pond::where('status_pond', 'Deactive')->orderBy('updated_at', 'desc')->get();
-        return view('history', compact('deactivatedPonds'));
     }
 
     public function updatesensor(Request $request, $id_pond)

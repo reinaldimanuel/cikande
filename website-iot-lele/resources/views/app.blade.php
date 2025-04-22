@@ -28,35 +28,61 @@
             font-style: normal;
         }
 
-        .custom-tab {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #6c757d; /* Soft gray */
-            padding: 12px 20px;
-            transition: all 0.3s ease-in-out;
-            border: none;
-            border-bottom: 2px solid transparent;
-        }
-
-        .custom-tab:hover, .custom-tab:focus {
-            color: #212529; /* Darker text */
-            border-bottom: 2px solid #6c757d;
-        }
-
-        .custom-tab.active {
-            color: #212529;
-            border-bottom: 3px solid #007bff; /* Blue accent for active tab */
-            background: none;
-        }
-
-        .nav-tabs {
-            border-bottom: 1px solid #ddd;
-            margin-top: 10px;
-        }
     </style>
 </head>
+
 <body>
 <div class="opening">
+
+     <!-- Top Bar Start -->
+     <div class="topbar d-print-none">
+            <div class="container-fluid">
+                <nav class="topbar-custom d-flex justify-content-between" id="topbar-custom">    
+                    <ul class="topbar-item list-unstyled d-inline-flex align-items-center mb-0">                        
+                        <li>
+                            <button class="nav-link mobile-menu-btn nav-icon" id="togglemenu">
+                                <i class="iconoir-menu"></i>
+                            </button>
+                        </li> 
+                        <li class="mx-2 welcome-text">
+                            <h5 class="mb-0 fw-semibold text-truncate">Selamat Datang, {{ Auth::user()->name }}!</h5>
+                        </li>                   
+                    </ul>
+                    <ul class="topbar-item list-unstyled d-inline-flex align-items-center mb-0">
+                        <li class="date-time">
+                            <h5 class="mb-0 fw-semibold text-truncate">
+                                <span id="tanggal-jam" style="display: inline-block; min-width: 320px; font-family: monospace; background-color: #4682b4; text-align: center; padding: 6px 20px; border-radius: 20px; color: white;"></span>
+                            </h5>
+                            <script>
+                                function updateTanggalJam() {
+                                    const now = new Date();
+
+                                    const optionsTanggal = {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                    };
+
+                                    const tanggal = now.toLocaleDateString('id-ID', optionsTanggal);
+
+                                    const jam = String(now.getHours()).padStart(2, '0');
+                                    const menit = String(now.getMinutes()).padStart(2, '0');
+                                    const detik = String(now.getSeconds()).padStart(2, '0');
+
+                                    document.getElementById('tanggal-jam').textContent = `${tanggal} | ${jam}:${menit}:${detik}`;
+                                }
+
+                                updateTanggalJam(); // jalankan saat pertama load
+                                setInterval(updateTanggalJam, 1000); // update setiap detik
+                            </script>
+                        </li> 
+                    </ul><!--end topbar-nav-->
+                </nav>
+                <!-- end navbar-->
+            </div>
+        </div>
+    <!-- Top Bar End -->
     
     <!-- leftbar-tab-menu -->
     <div class="startbar d-print-none">
@@ -64,7 +90,7 @@
         <div class="brand">
             <a href="/dasbor" class="logo">
                 <span>
-                    <img src="{{ asset('images/simko-icon.png') }}" alt="logo-small" class="logo-sm">
+                    <img src="{{ asset('images/simko-icon.png') }}" alt="logo-small" class="logo-sm mt-3">
                 </span>
                 <span class="">
                     <img src="{{ asset('images/simko.png') }}" alt="logo-large" class="logo-lg logo-dark">
@@ -74,9 +100,6 @@
         <!--end brand-->
         <!--start startbar-menu-->
         <div class="startbar-menu" >
-            <div class="startbar-toggle-pointer nav-link mobile-menu-btn" id="toggleStartbar">
-                <i class="fas fa-align-justify"></i>
-            </div>
             <div class="startbar-collapse" id="startbarCollapse" data-simplebar>
                 <div class="d-flex align-items-start flex-column w-100">
                     <!-- Navigation -->
@@ -87,24 +110,49 @@
 
                         <li class="nav-item">
                             <a class="nav-link" href="/dasbor">
-                                <i class="iconoir-reports menu-icon"></i>
+                                <i class="iconoir-graph-up menu-icon"></i>
                                 <span>Dasbor</span>
                             </a>
                         </li><!--end nav-item-->
 
                         <li class="nav-item">
                             <a class="nav-link" href="/kolam">
-                                <i class="iconoir-report-columns menu-icon"></i>
+                                <i class="iconoir-fish menu-icon"></i>
                                 <span>Kolam</span>
                             </a>
                         </li><!--end nav-item-->
 
                         <li class="nav-item">
                             <a class="nav-link" href="/riwayat">
-                                <i class="iconoir-cinema-old menu-icon"></i>
+                                <i class="iconoir-archive menu-icon"></i>
                                 <span>Riwayat</span>
                             </a>
                         </li><!--end nav-item-->
+                    </ul><!--end navbar-nav--->
+
+                     <!-- Navigation -->
+                     <ul class="navbar-nav mb-auto w-100">
+                        <li class="menu-label mt-2">
+                            <span>Akun</span>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/pengaturan">
+                                <i class="iconoir-user-square menu-icon"></i>
+                                <span>Pengaturan</span>
+                            </a>
+                        </li><!--end nav-item-->
+
+                        <li class="nav-item">
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+
+                            <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="iconoir-undo-circle menu-icon"></i>
+                                <span>Logout</span>
+                            </a>
+                        </li>
                     </ul><!--end navbar-nav--->
                 </div>
             </div><!--end startbar-collapse-->
@@ -119,11 +167,28 @@
 
 <div class="page-wrapper">
     <div class="page-content">
-        <div class="container-fluid">
-            
-
+        <div class="container-fluid mb-4">
             @yield('content')
         </div>
+
+        <footer class="footer text-center text-sm-start d-print-none">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card mb-0 rounded-bottom-0">
+                            <div class="card-body">
+                                <p class="text-muted mb-0">
+                                    ©
+                                    <script> document.write(new Date().getFullYear()) </script>
+                                    SIMKO - Sistem Monitoring Kolam
+                                    <span class="text-muted d-none d-sm-inline-block float-end">| by Information Systems UPH 2022</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </div> 
 </div>
 

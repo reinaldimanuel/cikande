@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,13 +15,68 @@ class Pond extends Model
     public $incrementing = true;
     protected $keyType = 'string';
 
-    protected $fillable = ['id_pond', 'name_pond', 'age_fish', 'total_fish','status_pond'];
+    protected $fillable = ['id_pond', 'name_pond', 'age_fish', 'total_fish','status_pond','deact_reason'];
 
     public $timestamps = true;
+
+    public function readings() {
+        return $this->hasMany(SensorReading::class, 'id_pond', 'id_pond');
+    }
 
     public function latestReading()
     {
         return $this->hasOne(SensorReading::class, 'id_pond', 'id_pond')
                     ->latest('created_at'); // Fetch the latest sensor reading
+    }
+    
+    public function getTotalAgeInDaysAttribute()
+    {
+        $createdAt = Carbon::parse($this->created_at);
+        $now = Carbon::now();
+        
+        $daysSinceCreation = $createdAt->diffInDays($now);
+        return $this->age_fish + $daysSinceCreation;
+    }
+    
+    /**
+     * Format umur menjadi lebih mudah dibaca
+     */
+    public function getFormattedAgeAttribute()
+    {
+        return $this->formatAge($this->total_age_in_days);
+    }
+    
+    /**
+     * Helper untuk format umur
+     */
+    protected function formatAge($totalDays)
+    {
+        $years = floor($totalDays / 365);
+        $remainingDays = $totalDays % 365;
+        
+        $months = floor($remainingDays / 30);
+        $remainingDays = $remainingDays % 30;
+        
+        $weeks = floor($remainingDays / 7);
+        $days = $remainingDays % 7;
+        
+        // Format berdasarkan kriteria
+        if ($years > 0) {
+            // Tahun dan Bulan saja (abaikan minggu dan hari)
+            return $years . ' tahun' . ($months > 0 ? ' ' . $months . ' bulan' : '');
+        } 
+        elseif ($months > 0) {
+            // Bulan dan Minggu (jika bulan ada)
+            $weekPart = $weeks > 0 ? ' ' . $weeks . ' minggu' : '';
+            return $months . ' bulan' . $weekPart;
+        }
+        elseif ($weeks > 0) {
+            // Minggu dan Hari (jika minggu ada)
+            return $weeks . ' minggu' . ($days > 0 ? ' ' . $days . ' hari' : '');
+        }
+        else {
+            // Hanya Hari
+            return $days . ' hari';
+        }
     }
 }

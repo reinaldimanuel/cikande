@@ -3,7 +3,7 @@
 @section('content')
 
 
-<div class="container mt-4">
+<div class="container mt-3">
 
     @if(session('success'))
         <div class="alert alert-success shadow-sm border-theme-white-2 position-relative" role="alert">
@@ -18,7 +18,7 @@
     <div class="d-flex justify-content-center justify-content-md-between align-items-center mb-4 pb-3 border-bottom flex-wrap position-relative mt-3">
         <!-- Back Button -->
         <a href="{{ route('kolam.index') }}" class="btn btn-outline-secondary text-dark position-absolute top-0 start-0 d-none d-sm-inline-flex">
-            <i class="fas fa-arrow-left me-1"></i> Kembali
+            <i class="fas fa-arrow-left"></i>
         </a>
         <a href="{{ route('kolam.index') }}" class="btn btn-outline-secondary text-dark position-absolute top-0 start-0 d-inline-flex d-sm-none">
             <i class="fas fa-arrow-left"></i>
@@ -50,15 +50,15 @@
         </div>
     </div>
 
-    <ul class="nav nav-tabs justify-content-center border-0" id="myTab" role="tablist">
+    <ul class="nav nav-tabs justify-content-center border-0 fs-5" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link custom-tab" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab" aria-controls="schedule" aria-selected="true">Jadwal Pakan</button>
+            <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab" aria-controls="schedule" aria-selected="true">Jadwal Pakan</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link custom-tab active" id="sensor-tab" data-bs-toggle="tab" data-bs-target="#sensor" type="button" role="tab" aria-controls="sensor" aria-selected="false">Status Harian</button>
+            <button class="nav-link active" id="sensor-tab" data-bs-toggle="tab" data-bs-target="#sensor" type="button" role="tab" aria-controls="sensor" aria-selected="false">Status Harian</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link custom-tab" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting" type="button" role="tab" aria-controls="setting" aria-selected="false">Atur Sensor</button>
+            <button class="nav-link" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting" type="button" role="tab" aria-controls="setting" aria-selected="false">Atur Sensor</button>
         </li>
     </ul>
     

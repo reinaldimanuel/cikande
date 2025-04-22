@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\SensorReading;
 use App\Models\Pond;
+use Illuminate\Support\Facades\DB;
 
 class ChartController extends Controller
 {
@@ -28,11 +29,15 @@ class ChartController extends Controller
     
         // Get age distribution chart data
         $agechart = Pond::where('status_pond', 'Active')
-            ->select('age_fish', Pond::raw('SUM(total_fish) as total'))
-            ->groupBy('age_fish')
-            ->orderBy('age_fish')
+            ->select('name_pond', 'age_fish', 'total_fish as total')
+            ->orderBy('name_pond')
             ->get();
-    
-        return view('dashboard', compact('readings', 'startDate', 'endDate', 'agechart', 'ponds', 'selectedPondId'));
+
+        $feeders = DB::table('feeder')
+            ->join('pond', 'feeder.id_pond', '=', 'pond.id_pond')
+            ->select('pond.name_pond', 'feeder.feeder_status')
+            ->get();
+
+        return view('app-dashboard', compact('readings', 'startDate', 'endDate', 'agechart', 'ponds', 'selectedPondId','feeders'));
     }
 }

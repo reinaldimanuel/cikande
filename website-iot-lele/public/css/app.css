@@ -639,6 +639,7 @@ input.add-file-input {
   position: relative;
   min-height: calc(100vh - var(--bs-topbar-height));
   padding: 0 0.75rem 68px 0.75rem;
+  margin-top: var(--bs-topbar-height);
 }
 .page-wrapper .page-content .page-title-box {
   padding: 1.5rem 0;
@@ -1942,24 +1943,6 @@ html[data-bs-theme=dark] .logo-dark {
 @media (max-width: 1199.98px) {
   [data-sidebar-size=default] .startbar-overlay {
     display: block;
-  }
-
-  .startbar-toggle-pointer {
-    position: absolute;
-    top: 40%;
-    right: -31px; /* So it's outside the sidebar */
-    transform: translateY(-50%);
-    width: 30px;
-    height: 30px;
-    background-color: #4682b4;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   }
 }
 [dir=rtl] .startbar .nav-link[data-bs-toggle=collapse]:after {
