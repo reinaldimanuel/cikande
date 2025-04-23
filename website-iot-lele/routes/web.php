@@ -10,6 +10,9 @@ use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Auth; 
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\PumpController;
+
+Route::post('/pump-control', [PumpController::class, 'control']);
 
 Route::get('/', function () {
     return view('welcome');

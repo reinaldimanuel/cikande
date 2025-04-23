@@ -341,7 +341,17 @@
                             <div class="card-header bg-light fw-bold">Netralisir Air</div>
                             <div class="card-body justify-content-between align-items-center">
                                 <div class="text-center mt-4">
-                                    <button class="btn btn-warning btn-sm py-4 px-5">Mulai</button>
+                                <button 
+                                    class="btn btn-warning btn-sm py-4 px-5" 
+                                    onclick="controlPump('on')">
+                                    Mulai
+                                </button>
+                                <button 
+    class="btn btn-danger btn-sm py-4 px-5" 
+    onclick="controlPump('off')">
+    Berhenti
+</button>
+
                                 </div>
                                 <div class="mt-5">
                                     <p class="mb-0">Sistem netralisir air sudah diatur secara otomatis.</p>
@@ -468,5 +478,28 @@
     </div>
 
 </div>
+<script>
+function controlPump(command) {
+    fetch('/pump-control', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ command: command })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status) {
+            alert(data.status); // misalnya: "Pompa ON"
+        } else {
+            alert("Gagal: " + data.error);
+        }
+    })
+    .catch(error => {
+        alert("Terjadi kesalahan: " + error);
+    });
+}
+</script>
 
 @endsection
