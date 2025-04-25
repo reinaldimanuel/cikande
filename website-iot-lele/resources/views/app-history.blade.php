@@ -20,7 +20,7 @@
                     <th>Tanggal Buat Kolam</th>
                     <th>Tanggal Hapus Kolam</th>
                     <th>Alasan</th>
-                    <th>Lihat Data</th>
+                    <th>Rekap Data</th>
                 </tr>
             </thead>
             <tbody id="deactivatedPondTableBody">
@@ -34,11 +34,11 @@
                             <a href="#" class="btn btn-primary btn-sm show-sensor-modal rounded"
                                 data-pond-id="{{ $pond->id_pond }}"
                                 data-pond-name="{{ $pond->name_pond }}"
-                                data-fish-age="{{ $pond->age_fish }}"
+                                data-fish-age="{{ $pond->history_formatted_age }}"
                                 data-fish-total="{{ $pond->total_fish }}"
                                 data-bs-toggle="modal"
                                 data-bs-target="#sensorModal">
-                                <i class="fas fa-eye"></i>&nbsp;&nbsp;Lihat Status Terakhir
+                                <i class="fas fa-eye px-2"></i>
                             </a>
                         </td>
                     </tr>
@@ -61,20 +61,22 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="sensorModalTitle">Status Terakhir</h5>
+                    <h5 class="modal-title fs-5" id="sensorModalTitle">Rekap Data 
+                        <span id="lastSensorTime" class="text-muted small"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="d-flex justify-content-center mb-3">
-                        <h5 id="pondName"></h5>
+                        <h5 class="fw-semibold" id="pondName"></h5>
                         &nbsp;
                         &nbsp;
                         &nbsp;
-                        <h5 id="fishAge"></h5>
+                        <h5 class="fw-semibold" id="fishAge"></h5>
                         &nbsp;
                         &nbsp;
                         &nbsp;
-                        <h5 id="fishTotal"></h5>
+                        <h5 class="fw-semibold" id="fishTotal"></h5>
                     </div>
 
                     <table class="table">
@@ -109,6 +111,8 @@
         </div>
     </div>
 
+
+    <!-- Search Bar Script -->
     <script>
         document.getElementById('searchDeactivatedPond').addEventListener('keyup', function () {
             const keyword = this.value.toLowerCase();
@@ -130,56 +134,64 @@
         });
     </script>
 
+    <!-- Average Data Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let selectedPondId = null;
 
-            // Fungsi untuk update isi modal
-            function updateModalInfo(button) {
-                selectedPondId = button.getAttribute("data-pond-id");
-                document.getElementById("pondName").innerText = "Kolam : " + button.getAttribute("data-pond-name");
-                document.getElementById("fishAge").innerText = "Umur : " + button.getAttribute("data-fish-age") + " hari";
-                document.getElementById("fishTotal").innerText = "Total : " + button.getAttribute("data-fish-total") + " ikan";
-            }
-
-            // Fungsi ambil dan tampilkan average sensor
-            function loadAverageSensor(range) {
-                if (!selectedPondId) return;
-
-                fetch(`/riwayat/${selectedPondId}/average-sensor?range=${range}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.average) {
-                            document.getElementById("phValue").innerText = data.average.avg_ph ?? "N/A";
-                            document.getElementById("temperatureValue").innerText = data.average.avg_temperature ?? "N/A";
-                            document.getElementById("tdsValue").innerText = data.average.avg_tds ?? "N/A";
-                            document.getElementById("conductivityValue").innerText = data.average.avg_conductivity ?? "N/A";
-                            document.getElementById("salinityValue").innerText = data.average.avg_salinity ?? "N/A";
-                        } else {
-                            // Kalau tidak ada data, tampilkan N/A semua
-                            ["phValue", "temperatureValue", "tdsValue", "conductivityValue", "salinityValue"].forEach(id => {
-                                document.getElementById(id).innerText = "N/A";
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Error:", err);
-                    });
-            }
-
-            // Event: klik tombol lihat sensor
             document.querySelectorAll(".show-sensor-modal").forEach(button => {
-                button.addEventListener("click", () => {
-                    updateModalInfo(button);
-                    document.getElementById("sensorRangeFilter").value = "1"; // set default
-                    loadAverageSensor(1);
+                button.addEventListener("click", function () {
+                    selectedPondId = this.getAttribute("data-pond-id");
+
+                    // Info kolam
+                    document.getElementById("pondName").innerText = "Kolam : " + this.getAttribute("data-pond-name");
+                    document.getElementById("fishAge").innerText = "Umur : " + this.getAttribute("data-fish-age");
+                    document.getElementById("fishTotal").innerText = "Total : " + this.getAttribute("data-fish-total") + " ikan";
+
+                    // Default 1 bulan
+                    getAverageSensor(1);
+                    document.getElementById("sensorRangeFilter").value = "1";
                 });
             });
 
-            // Event: ubah filter bulan
             document.getElementById("sensorRangeFilter").addEventListener("change", function () {
-                loadAverageSensor(this.value);
+                const range = this.value;
+                getAverageSensor(range);
             });
+
+            function formatDateTime(datetime) {
+                const date = new Date(datetime);
+                return date.toLocaleString('id-ID', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+            }
+
+            function getAverageSensor(months) {
+                if (!selectedPondId) return;
+
+                fetch(`/riwayat/${selectedPondId}/average-sensor?range=${months}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById("phValue").innerText = data.avg_ph ?? "N/A";
+                        document.getElementById("temperatureValue").innerText = data.avg_temperature ?? "N/A";
+                        document.getElementById("tdsValue").innerText = data.avg_tds ?? "N/A";
+                        document.getElementById("conductivityValue").innerText = data.avg_conductivity ?? "N/A";
+                        document.getElementById("salinityValue").innerText = data.avg_salinity ?? "N/A";
+
+                        if (data.last_reading_time) {
+                            document.getElementById("lastSensorTime").innerText = `(Status terakhir: ${formatDateTime(data.last_reading_time)})`;
+                        } else {
+                            document.getElementById("lastSensorTime").innerText = "";
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Gagal memuat data rata-rata sensor:", err);
+                    });
+            }
         });
     </script>
 </div>

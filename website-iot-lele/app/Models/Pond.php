@@ -15,7 +15,7 @@ class Pond extends Model
     public $incrementing = true;
     protected $keyType = 'string';
 
-    protected $fillable = ['id_pond', 'name_pond', 'age_fish', 'total_fish','status_pond','deact_reason'];
+    protected $fillable = ['id_pond', 'name_pond', 'birth_fish', 'total_fish','status_pond','deact_reason'];
 
     public $timestamps = true;
 
@@ -31,21 +31,30 @@ class Pond extends Model
     
     public function getTotalAgeInDaysAttribute()
     {
-        $createdAt = Carbon::parse($this->created_at);
+        if (!$this->birth_fish) {
+            return null; // Atau bisa return 0 tergantung kebutuhan
+        }
+
+        $birthDate = Carbon::parse($this->birth_fish);
         $now = Carbon::now();
-        
-        $daysSinceCreation = $createdAt->diffInDays($now);
-        return $this->age_fish + $daysSinceCreation;
+
+        return $birthDate->diffInDays($now);
     }
-    
+
     /**
      * Format umur menjadi lebih mudah dibaca
      */
     public function getFormattedAgeAttribute()
     {
-        return $this->formatAge($this->total_age_in_days);
+        $totalDays = $this->total_age_in_days;
+
+        if (is_null($totalDays)) {
+            return '-';
+        }
+
+        return $this->formatAge($totalDays);
     }
-    
+
     /**
      * Helper untuk format umur
      */
@@ -53,13 +62,13 @@ class Pond extends Model
     {
         $years = floor($totalDays / 365);
         $remainingDays = $totalDays % 365;
-        
+
         $months = floor($remainingDays / 30);
         $remainingDays = $remainingDays % 30;
-        
+
         $weeks = floor($remainingDays / 7);
         $days = $remainingDays % 7;
-        
+
         // Format berdasarkan kriteria
         if ($years > 0) {
             // Tahun dan Bulan saja (abaikan minggu dan hari)

@@ -3,7 +3,6 @@
 @section('content')
 
 <div class="container mt-3">
-
     @if(session('success'))
         <div class="alert alert-success shadow-sm border-theme-white-2 position-relative" role="alert">
             <div class="d-inline-flex justify-content-center align-items-center thumb-xs bg-success rounded-circle mx-auto me-1">
@@ -14,8 +13,7 @@
         </div> 
     @endif
 
-    <div class="card-body pt-0">
-                    
+    <div class="card-body pt-0">                   
         <!-- Judul & Search Bar -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="page-title mb-0">Daftar Kolam</h4>
@@ -63,10 +61,7 @@
                                 @method('PUT')
                                 <button type="button" class="btn btn-danger btn-sm" 
                                     data-bs-toggle="modal" 
-                                    data-bs-target="#confirmDeleteModal{{ $pond->id_pond }}"
-                                    data-pond-id="{{ $pond->id_pond }}"
-                                    data-pond-age="{{ $pond->formatted_age }}"
-                                    data-pond-name="{{ $pond->name_pond }}">
+                                    data-bs-target="#confirmDeleteModal{{ $pond->id_pond }}">
                                     Hapus
                                 </button>
                             </form>
@@ -92,8 +87,8 @@
                                     <input type="text" class="form-control" name="name_pond" value="{{ $pond->name_pond }}" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label>Umur Ikan (bulan)</label>
-                                    <input type="number" class="form-control" name="age_fish" value="{{ $pond->age_fish }}" required>
+                                    <label>Umur Ikan</label>
+                                    <input type="date" class="form-control" name="birth_fish" value="{{ $pond->birth_fish }}" required>
                                 </div>
                                 <div class="mb-3">
                                     <label>Jumlah Ikan</label>
@@ -151,8 +146,8 @@
                             <input type="text" class="form-control" name="name_pond" required>
                         </div>
                         <div class="mb-3">
-                            <label>Umur Ikan (hari)</label>
-                            <input type="number" class="form-control" name="age_fish" required>
+                            <label>Umur Ikan</label>
+                            <input type="date" class="form-control" name="birth_fish" required>
                         </div>
                         <div class="mb-3">
                             <label>Jumlah Ikan</label>
@@ -175,7 +170,6 @@
                 <form method="POST" action="{{ route('kolam.deactivate', $pond->id_pond) }}">
                     @csrf
                     @method('PUT')
-                    <input type="hidden" name="age_fish" value="{{ $pond->formatted_age }}">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Konfirmasi Hapus Kolam</h5>

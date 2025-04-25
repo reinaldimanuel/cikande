@@ -7,6 +7,14 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-4 mx-auto">
+
+                        @if (session('status'))
+                            <div class="alert alert-success alert-dismissible fade show">
+                                {{ session('status') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
                             <div class="card">
                                 <div class="card-body p-0 bg-light auth-header-box rounded-top">
                                     <div class="text-center p-3">
@@ -19,14 +27,15 @@
                                 <div class="card-body pt-0">                                    
                                     <form class="my-4" action="{{ route('password.email') }}">            
                                         <div class="form-group mb-2">
-                                            <label class="form-label" for="username">Email</label>
-                                            <input type="text" class="form-control" id="userEmail" name="Email" placeholder="Isi email Anda disini..." required>                               
+                                            <label class="form-label" for="email">Email</label>
+                                            <input type="email" class="form-control" name="email" placeholder="Isi email Anda disini..." required>
+                                            @error('email') <small class="text-danger">{{ $message }}</small> @enderror                               
                                         </div><!--end form-group-->             
                                         
                                         <div class="form-group mb-0 row">
                                             <div class="col-12">
                                                 <div class="d-grid mt-3">
-                                                    <button class="btn btn-primary" type="button">Reset <i class="fas fa-sign-in-alt ms-1"></i></button>
+                                                    <button class="btn btn-primary" type="submit">Reset <i class="fas fa-sign-in-alt ms-1"></i></button>
                                                 </div>
                                             </div><!--end col--> 
                                         </div> <!--end form-group-->                           

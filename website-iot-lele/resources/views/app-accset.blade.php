@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="container mt-3">
-
+    <!-- Message Alert -->
     @if(session('status'))
         <div class="alert alert-success mb-3 alert-dismissible fade show" role="alert"">
             {{ session('status') }}
@@ -24,7 +24,7 @@
 
     <h1 class="mb-4 fs-3">Pengaturan Akun</h1>
 
-    <div class="row g-4">
+    <div class="row g-4">        
         <!-- Card 1 -->
         <div class="col-md-6">
             <div class="card h-100">

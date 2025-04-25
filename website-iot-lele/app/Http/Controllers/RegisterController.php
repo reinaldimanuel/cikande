@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyEmail;
 
 class RegisterController extends Controller
 {
@@ -20,7 +23,7 @@ class RegisterController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|regex:/^[A-Za-z0-9_ ]+$/',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'email' => 'required|string|email|max:255|unique:users,email|email:dns',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -28,10 +31,12 @@ class RegisterController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'verification_token' => Str::uuid(),
         ]);
 
-        Auth::login($user); // auto-login after registration
+        Mail::to($user->email)->send(new VerifyEmail($user));
 
-        return redirect()->intended('dasbor')->with('success', 'Berhasil membuat akun!');
+        return redirect()->route('verification.notice')
+                        ->with('success', 'Registrasi berhasil! Silakan cek email untuk verifikasi.');
     }
 }

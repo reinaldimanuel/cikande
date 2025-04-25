@@ -13,11 +13,23 @@ class HistoryController extends Controller
     public function deactivatedPonds(){
         
         $deactivatedPonds = Pond::where('status_pond', 'Deactive')
-        ->with(['latestReading']) // Fetch latest sensor data
         ->orderBy('updated_at', 'desc')
-        ->get();
-        
-        return view('app-history', data: compact('deactivatedPonds'));
+        ->get()
+        ->map(function ($pond) {
+            if ($pond->birth_fish) {
+                $start = Carbon::parse($pond->birth_fish);
+                $end = Carbon::parse($pond->updated_at);
+                $totalDays = $start->diffInDays($end);
+
+                $pond->history_formatted_age = $this->formatAge($totalDays);
+            } else {
+                $pond->history_formatted_age = '-';
+            }
+
+            return $pond;
+        });
+
+        return view('app-history', compact('deactivatedPonds'));
     }
 
     public function getAverageSensor(Request $request, $id_pond)
@@ -55,11 +67,11 @@ class HistoryController extends Controller
         $average = SensorReading::where('id_pond', $id_pond)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
-                AVG(ph) as avg_ph,
-                AVG(temperature) as avg_temperature,
-                AVG(tds) as avg_tds,
-                AVG(conductivity) as avg_conductivity,
-                AVG(salinity) as avg_salinity
+                ROUND(AVG(ph), 1) as avg_ph,
+                ROUND(AVG(temperature), 1) as avg_temperature,
+                ROUND(AVG(tds), 0) as avg_tds,
+                ROUND(AVG(conductivity), 0) as avg_conductivity,
+                ROUND(AVG(salinity), 2) as avg_salinity
             ')
             ->first();
 
@@ -69,6 +81,29 @@ class HistoryController extends Controller
             'avg_tds' => $average->avg_tds,
             'avg_conductivity' => $average->avg_conductivity,
             'avg_salinity' => $average->avg_salinity,
+            'last_reading_time' => $lastReading->created_at->toDateTimeString(),
         ]);
+    }
+
+    protected function formatAge($totalDays)
+    {
+        $years = floor($totalDays / 365);
+        $remainingDays = $totalDays % 365;
+
+        $months = floor($remainingDays / 30);
+        $remainingDays %= 30;
+
+        $weeks = floor($remainingDays / 7);
+        $days = $remainingDays % 7;
+
+        if ($years > 0) {
+            return $years . ' tahun' . ($months > 0 ? ' ' . $months . ' bulan' : '');
+        } elseif ($months > 0) {
+            return $months . ' bulan' . ($weeks > 0 ? ' ' . $weeks . ' minggu' : '');
+        } elseif ($weeks > 0) {
+            return $weeks . ' minggu' . ($days > 0 ? ' ' . $days . ' hari' : '');
+        } else {
+            return $days . ' hari';
+        }
     }
 }

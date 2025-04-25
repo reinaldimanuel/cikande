@@ -7,6 +7,14 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-4 mx-auto">
+
+                        @if (session('status'))
+                            <div class="alert alert-success alert-dismissible fade show">
+                                {{ session('status') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
                             <div class="card">
                                 <div class="card-body p-0 bg-light auth-header-box rounded-top">
                                     <div class="text-center p-3">
@@ -19,19 +27,25 @@
                                 <div class="card-body pt-0">                                    
                                     <form class="my-4" action="{{ route('password.update') }}"> 
                                         @csrf           
+
+                                        <input type="hidden" name="token" value="{{ $token }}">
+
                                         <div class="form-group mb-2">
-                                            <label class="form-label" for="userpassword">Password</label>                                            
-                                            <input type="password" class="form-control" name="password" placeholder="Masukkan password">                            
+                                            <label>Email</label>
+                                            <input type="email" name="email" class="form-control" value="{{ $email ?? old('email') }}" required>
+                                            @error('email') <small class="text-danger">{{ $message }}</small> @enderror
+                                        </div>
+
+                                        <div class="form-group mb-2">
+                                            <label class="form-label"   >Password</label>                                            
+                                            <input type="password" class="form-control" name="password" placeholder="Masukkan password">    
+                                            @error('password') <small class="text-danger">{{ $message }}</small> @enderror                        
                                         </div><!--end form-group--> 
 
                                         <div class="form-group mb-2">
-                                            <label class="form-label" for="Confirmpassword">Konfirmasi Password</label>                                            
+                                            <label class="form-label">Konfirmasi Password</label>                                            
                                             <input type="password" class="form-control" name="password_confirmation" placeholder="Masukkan kembali password">                            
                                         </div><!--end form-group--> 
-
-                                        @error('email')
-                                            <div class="text-red-500 text-sm mb-2">{{ $message }}</div>
-                                        @enderror
             
                                         <div class="form-group mb-0 row">
                                             <div class="col-12">

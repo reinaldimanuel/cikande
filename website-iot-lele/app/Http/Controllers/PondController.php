@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Pond;
 use App\Models\SensorReading;
@@ -26,30 +27,39 @@ class PondController extends Controller
         return view('app-pond', compact('ponds'));
     }
 
-    public function show($id_pond){
+    public function show(Request $request, $id_pond){
         // Fetch the pond data
         $pond = Pond::where('id_pond', $id_pond)->firstOrFail();
 
         // Fetch the latest sensor reading for this pond
-        $sensorReadings = SensorReading::where('id_pond', $id_pond)->orderBy('created_at', 'asc')->get();
+        $latestReadings  = SensorReading::where('id_pond', $id_pond)->orderBy('created_at', 'asc')->get();
 
-        // Fetch pond settings (assumed there is a settings table)
-        $settings = SensorSettings::where('id_pond', $id_pond)->first(); // Adjust if settings are per pond
+        // Range date filter: default from 7 days ago to now
+        $startDate = $request->input('start_date', Carbon::now()->subDays(7)->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->toDateString());
+
+        // Fetch sensor readings within the range (default: 7 days)
+        $sensorReadings = SensorReading::where('id_pond', $id_pond)
+            ->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);;
+
+        // Fetch pond settings
+        $settings = SensorSettings::where('id_pond', $id_pond)->first();
 
         //Fetch Feeding Schedule and Histories
         $schedules = FeedingSchedule::where('id_pond', $id_pond)->orderBy('feeding_time')->get();
-        $histories = FeedingHistory::where('id_pond', $id_pond)->orderBy('feeding_time', 'desc')->get(); // Fetch history data
-
+        $histories = FeedingHistory::where('id_pond', $id_pond)->orderBy('feeding_time', 'desc')->get();
         $feeder = Feeder::where('id_pond', $id_pond)->first();
 
-        return view('app-ponddetail', compact('pond', 'sensorReadings', 'settings','schedules','histories','feeder'));
+        return view('app-ponddetail', compact('pond', 'latestReadings', 'sensorReadings', 'settings','schedules','histories','feeder', 'startDate', 'endDate'));
     }
 
     public function store(Request $request) {
         // Validate input data
         $request->validate([
             'name_pond' => 'required',
-            'age_fish' => 'required|integer',
+            'birth_fish' => 'required|date',
             'total_fish' => 'required|integer',
         ]);
     
@@ -92,7 +102,6 @@ class PondController extends Controller
     
         $pond->status_pond = 'Deactive';
         $pond->deact_reason = $request->input('deact_reason');
-        $pond->age_fish = $request->input('age_fish');
         $pond->save();
 
         return redirect()->route('kolam.index')->with('success', 'Kolam dihapus!');
@@ -124,42 +133,21 @@ class PondController extends Controller
         return redirect()->back()->with('success', 'Berhasil, nilai sensor telah diubah!');
     }
 
-    public function storetime(Request $request, $id_pond)
-    {
-        $request->validate([
-            'feeding_time' => 'required|date_format:H:i',
-        ]);
-    
-        FeedingSchedule::create([
-            'id_pond' => $id_pond,  // Store the selected id_pond
-            'feeding_time' => $request->feeding_time,
-        ]);
-
-        return redirect()->back()->with('success', 'Berhasil menambahkan waktu!');
-    }
-
-    public function updatetime(Request $request, $id)
+    public function updatetotalfood(Request $request, $id)
     {
         // Find the feeding schedule by ID
-        $schedule = FeedingSchedule::where('id', $id)->firstOrFail();
+        $feeder = Feeder::where('id', $id)->firstOrFail();
 
         // Validate the request
         $request->validate([
-            'feeding_time' => 'required|date_format:H:i', // Ensures the time format is valid
+            'total_food' => 'required|integer', // Ensures the time format is valid
         ]);
 
         // Update the feeding time
-        $schedule->update([
-            'feeding_time' => $request->input('feeding_time'),
+        $feeder->update([
+            'total_food' => $request->input('total_food'),
         ]);
 
-        return redirect()->back()->with('success', 'Berhasil, waktu telah diubah!');
-    }
-
-    public function destroytime($id)
-    {
-        FeedingSchedule::findOrFail($id)->delete();
-
-        return redirect()->back()->with('success', 'Waktu dihapus!');
+        return redirect()->back()->with('success', 'Berhasil, jumlah pakan telah diubah!');
     }
 }

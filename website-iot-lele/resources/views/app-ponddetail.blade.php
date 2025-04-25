@@ -37,7 +37,7 @@
             <!-- Fish Age -->
             <div>
                 <p class="text-secondary text-uppercase fw-semibold fs-7 fs-md-6 mb-1">Umur Ikan</p>
-                <p class="fw-bold fs-5 fs-md-4 mb-0">{{ $pond->age_fish }} Bulan</p>
+                <p class="fw-bold fs-5 fs-md-4 mb-0">{{ $pond->formatted_age }}</p>
             </div>
 
             <span class="text-secondary fs-5 d-none d-md-inline">|</span>
@@ -55,7 +55,10 @@
             <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab" aria-controls="schedule" aria-selected="true">Jadwal Pakan</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="sensor-tab" data-bs-toggle="tab" data-bs-target="#sensor" type="button" role="tab" aria-controls="sensor" aria-selected="false">Status Harian</button>
+            <button class="nav-link active" id="sensor-tab" data-bs-toggle="tab" data-bs-target="#sensor" type="button" role="tab" aria-controls="sensor" aria-selected="false">Status Terkini</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="allsensor-tab" data-bs-toggle="tab" data-bs-target="#allsensor" type="button" role="tab" aria-controls="allsensor" aria-selected="false">Rekap Status</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="setting-tab" data-bs-toggle="tab" data-bs-target="#setting" type="button" role="tab" aria-controls="setting" aria-selected="false">Atur Sensor</button>
@@ -64,48 +67,10 @@
     
     <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade" id="schedule" role="tabpanel" aria-labelledby="schedule-tab">
-
             <div class="container mt-4">
-                <div class="row">
+                <div class="row d-flex align-items-stretch">
                     <!-- Left Column: Schedule -->
-                    <div class="col-md-8">
-                        <div class="card p-3 h-100" style="background-color: lavender;">
-                            <h5><strong>Jadwal Harian Pemberian Pakan</strong></h5>
-                            <div class="card-body">
-                                <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#feedingModal">Tambah Waktu</button>
-                                <table class="table bg-white rounded">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Waktu</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($schedules as $schedule)
-                                            <tr>
-                                                <td>{{ \Carbon\Carbon::parse($schedule->feeding_time)->format('H:i') }}</td>
-                                                <td>
-                                                    <button class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editFeedingModal" data-id-pond="{{ $schedule->id }}" data-feeding-time="{{ $schedule->feeding_time }}">Edit</button>
-                                                    <form action="{{ route('kolam.destroytime', $schedule->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm delete-btn" onclick="return confirm('Yakin menghapus waktu ini?')">Hapus</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="2" class="text-center text-muted">Belum Ada Jadwal</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="col-md-4">
-                        <!-- Top Section: Status Tempat Pakan -->
                         @php
                             $status = $feeder->feeder_status;
                             $imageFile = $status === 'Kosong' 
@@ -113,7 +78,7 @@
                                 : 'fish_food_can_green.png';
                         @endphp
 
-                        <div class="card p-3 mb-3" style="background-color: lavender;">
+                        <div class="card h-100 p-3" style="background-color: lavender;">
                             <h5><strong>Status Tempat Pakan</strong></h5>
                             <div class="card-body text-center">
                                 <img 
@@ -126,14 +91,24 @@
                                 </p>
                             </div>
                         </div>
-                        
-                        <!-- Bottom Section: Pemberian Pakan Manual -->
-                        <div class="card p-3" style="background-color: lavender;">
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 p-3" style="background-color: lavender;">
+                            <h5><strong>Jumlah Pakan</strong></h5>
+                            <div class="card-body text-center">
+                                <h1>{{ $feeder->total_food }} kg</h1>                               
+                            </div>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTotalFood{{ $pond->id_pond }}">Edit</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 p-3" style="background-color: lavender;">
                             <h5><strong>Pemberian Pakan Manual</strong></h5>
                             <div class="card-body text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-3">
                                     <button id="startBtn" class="btn btn-success px-4 py-2">Mulai</button>
-                                    <button id="stopBtn" class="btn btn-danger px-4 py-2">Berhenti</button>
                                 </div>
                                 <p class="mt-3 fw-bold">Status Sistem: <span id="systemStatus">Berhenti</span></p>
                             </div>
@@ -175,43 +150,21 @@
                 </div>    
             </div>
 
-            <!-- Modal for Editing Feeding Time -->
-            <div class="modal fade" id="editFeedingModal" tabindex="-1" aria-labelledby="editFeedingModalLabel" aria-hidden="true">
+            <!-- Modal for Editing Total Food -->
+            <div class="modal fade" id="editTotalFood{{ $pond->id_pond }}" tabindex="-1" aria-labelledby="editTotalFoodLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="editFeedingModalLabel">Edit Waktu Pemberian Makan</h5>
+                            <h5 class="modal-title" id="editTotalFoodLabel">Edit Jumlah Pakan</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="editFeedingForm" method="POST" action="{{ route('kolam.updatetime', $schedule->id  ?? '') }}">
+                            <form id="editFeedingForm" method="POST" action="{{ route('kolam.updatetotalfood', $feeder->id  ?? '') }}">
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
-                                    <label for="feeding_time" class="form-label">Waktu Pemberian Makan</label>
-                                    <input type="time" class="form-control" name="feeding_time" id="feeding_time" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Simpan</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal for Adding Feeding Time -->
-            <div class="modal fade" id="feedingModal" tabindex="-1" aria-labelledby="feedingModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="feedingModalLabel">Tambah Waktu Pemberian Makan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="{{ route('kolam.storetime', $pond->id_pond  ?? '') }}" method="POST">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="feeding_time" class="form-label">Waktu Pemberian Makan</label>
-                                    <input type="time" class="form-control" name="feeding_time" id="feeding_time" required>
+                                    <label for="total_food" class="form-label">Jumlah Pakan (kg)</label>
+                                    <input type="number" class="form-control" name="total_food" id="total_food" value="{{ $feeder->total_food }}" required>
                                 </div>
                                 <button type="submit" class="btn btn-success">Simpan</button>
                             </form>
@@ -238,9 +191,8 @@
         </div>
 
         <div class="tab-pane fade show active" id="sensor" role="tabpanel" aria-labelledby="sensor-tab">
-
             <div class="row row-cols-1 row-cols-md-3 mt-3 g-3">
-                @forelse($sensorReadings as $reading)
+                @forelse($latestReadings as $reading)
                     @php
                         $parameters = [
                             ['name' => 'pH Air', 'value' => $reading->ph, 'min' => $settings->min_ph, 'max' => $settings->max_ph, 'status' => $reading->ph_status],
@@ -297,13 +249,13 @@
                             // Determine status and colors
                             if ($value < $min) {
                                 $status = 'Rendah';  
-                                $badgeClass = 'danger'; // Red
+                                $badgeColor = '#D32F2F'; 
                             } elseif ($value > $max) {
                                 $status = 'Tinggi';  
-                                $badgeClass = 'warning'; // Orange
+                                $badgeColor = '#FF5722'; 
                             } else {
-                                $status = 'Normal';  
-                                $badgeClass = 'success'; // Green
+                                $status = 'Normal';   
+                                $badgeColor = '#FFEB3B'; 
                             }
 
                             // Show warning icon if out of range
@@ -319,7 +271,7 @@
                                     {!! $warningIcon !!}
                                 </div>
                                 <div class="card-body text-center">
-                                    <span class="badge mb-2 text-bg-{{ $badgeClass }} p-2">
+                                    <span class="badge mb-2 p-2" style="background-color: {{ $badgeColor }}; color: white;">
                                         {{ $status }}
                                     </span>
                                     <div class="gauge-container">
@@ -340,8 +292,11 @@
                         <div class="card mb-3">
                             <div class="card-header bg-light fw-bold">Netralisir Air</div>
                             <div class="card-body justify-content-between align-items-center">
-                                <div class="text-center mt-4">
-                                    <button class="btn btn-warning btn-sm py-4 px-5">Mulai</button>
+                                <div class="text-center mt-3">
+                                    <div class="btn-group" role="group" aria-label="Mulai dan Berhenti">
+                                        <button class="btn btn-warning btn-sm p-4">Mulai</button>
+                                        <button class="btn btn-danger btn-sm p-4">Berhenti</button>
+                                    </div>
                                 </div>
                                 <div class="mt-5">
                                     <p class="mb-0">Sistem netralisir air sudah diatur secara otomatis.</p>
@@ -368,20 +323,20 @@
                             let target = document.getElementById(config.id);
                             if (target) {
                                 let gauge = new Gauge(target).setOptions({
-                                    angle: 0.15,  // Slightly curved gauge
-                                    lineWidth: 0.3,  // Thicker gauge line
+                                    angle: 0.15,  
+                                    lineWidth: 0.3,  
                                     radiusScale: 1,
                                     pointer: {
                                         length: 0.6,  
                                         strokeWidth: 0.05,  
-                                        color: '#ff4081' // Pink pointer like the image
+                                        color: '#778899'
                                     },
                                     limitMax: false,
                                     limitMin: false,
-                                    colorStart: config.value < config.min ? "#e16449" : config.value > config.max ? "#f4a14d" : "#0da684",
-                                    colorStop: config.value < config.min ? "#e16449" : config.value > config.max ? "#f4a14d                                 " : "#0da684",
-                                    strokeColor: "#E8F0FE", // Light blue background fill
-                                    generateGradient: false,  // Disable gradient effect
+                                    colorStart: config.value < config.min ? "#D32F2F" : config.value > config.max ? "#FF5722" : "#FFEB3B",
+                                    colorStop: config.value < config.min ? "#D32F2F" : config.value > config.max ? "#FF5722" : "#FFEB3B",
+                                    strokeColor: "#E8F0FE",
+                                    generateGradient: false,  
                                     highDpiSupport: true
                                 });
                                 gauge.maxValue = config.max;
@@ -397,8 +352,55 @@
 
         </div>
 
-        <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
+        <div class="tab-pane fade" id="allsensor" role="tabpanel" aria-labelledby="allsensor-tab">
+            <!-- Filter Form -->
+            <form method="GET" action="{{ route('kolam.show', ['id_pond' => $pond->id_pond]) }}" class="mb-3">
+                <div class="row mt-4 justify-content-center d-flex">
+                    <div class="col-md-3">
+                        <label>Dari Tanggal</label>
+                        <input type="date" name="start_date" value="{{ $startDate }}" class="form-control" onchange="this.form.submit()">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Sampai Tanggal</label>
+                        <input type="date" name="end_date" value="{{ $endDate }}" class="form-control" onchange="this.form.submit()">
+                    </div>
+                </div>
+            </form>
 
+            <!-- Sensor Readings Table -->
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Waktu</th>
+                        <th>pH</th>
+                        <th>Suhu (°C)</th>
+                        <th>TDS (ppm)</th>
+                        <th>Konduktivitas (µS/cm)</th>
+                        <th>Salinitas (ppt)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($sensorReadings as $reading)
+                    <tr>
+                        <td>{{ $reading->created_at->format('d/m/Y') }}</td>
+                        <td>{{ $reading->created_at->format('H:i') }}</td>
+                        <td>{{ $reading->ph }}</td>
+                        <td>{{ $reading->temperature }}</td>
+                        <td>{{ $reading->tds }}</td>
+                        <td>{{ $reading->conductivity }}</td>
+                        <td>{{ $reading->salinity }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7">Tidak ada data sensor dalam rentang waktu ini.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
             <div class="container my-3 rounded p-3" style="background-color: lavender;">
                 <h2>Pengaturan Nilai Optimal Sensor</h2>
                 <form action="{{ route('kolam.updatesensor',$settings->id_pond) }}" method="POST">
@@ -466,6 +468,30 @@
         </div>
 
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabKey = 'activeTab';
+            const tabTriggerEls = document.querySelectorAll('#myTab button[data-bs-toggle="tab"]');
+
+            // Restore tab from localStorage
+            const savedTabId = localStorage.getItem(tabKey);
+            if (savedTabId) {
+            const tabToShow = document.querySelector(`#${savedTabId}`);
+            if (tabToShow) {
+                const tab = new bootstrap.Tab(tabToShow);
+                tab.show();
+            }
+            }
+
+            // Save tab to localStorage when clicked
+            tabTriggerEls.forEach((tabEl) => {
+                tabEl.addEventListener('shown.bs.tab', (e) => {
+                    localStorage.setItem(tabKey, e.target.id);
+                });
+            });
+        });
+    </script>
 
 </div>
 
