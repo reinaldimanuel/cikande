@@ -128,7 +128,7 @@
                         </div>
                         
                         <!-- Bottom Section: Pemberian Pakan Manual -->
-                        <div class="card p-3" style="background-color: lavender;">
+                        {{-- <div class="card p-3" style="background-color: lavender;">
                             <h5><strong>Pemberian Pakan Manual</strong></h5>
                             <div class="card-body text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-3">
@@ -138,7 +138,18 @@
                                 <p class="mt-3 fw-bold">Status Sistem: <span id="systemStatus">Berhenti</span></p>
                             </div>
                         </div>
+                    </div>  --}}
+
+                    <div class="card p-3" style="background-color: lavender;">
+                        <h5><strong>Pemberian Pakan Manual</strong></h5>
+                        <div class="card-body text-center">
+                            <div class="d-flex justify-content-center align-items-center gap-3">
+                                <button id="startBtn" class="btn btn-success px-4 py-2">Mulai</button>
+                            </div>
+                            <div id="responseMessage" class="mt-3"></div>
+                        </div>
                     </div>
+                </div>
                     
                 </div>               
 
@@ -500,6 +511,28 @@ function controlPump(command) {
         alert("Terjadi kesalahan: " + error);
     });
 }
+</script>
+<script>
+document.getElementById('startBtn').addEventListener('click', function() {
+    const button = this;
+    button.disabled = true;
+    button.innerText = "Memproses...";
+
+    fetch("{{ url('/manual-feeding') }}")
+        .then(response => response.text())
+        .then(result => {
+            document.getElementById('responseMessage').innerHTML = 
+                `<div class="alert alert-success">✅ Pakan berhasil dijalankan!</div>`;
+        })
+        .catch(error => {
+            document.getElementById('responseMessage').innerHTML = 
+                `<div class="alert alert-danger">❌ Gagal mengirim pakan: ${error}</div>`;
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerText = "Mulai";
+        });
+});
 </script>
 
 @endsection
