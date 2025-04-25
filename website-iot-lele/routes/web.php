@@ -10,7 +10,10 @@ use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Auth; 
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\PakanController;
+use App\Http\Controllers\PumpController;
+
+Route::post('/pump-control', [PumpController::class, 'control']);
 
 Route::get('/', function () {
     return view('welcome');
@@ -88,3 +91,6 @@ Route::post('/insert', function (Request $request) {
 
     return response()->json(['status' => 'Data berhasil disimpan']);
 })->withoutMiddleware(['web']);
+
+// kode manual pakan 
+Route::get('/manual-feeding', [PakanController::class, 'ManualPakan']);

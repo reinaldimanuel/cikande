@@ -91,20 +91,9 @@
                                 </p>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="card h-100 p-3" style="background-color: lavender;">
-                            <h5><strong>Jumlah Pakan</strong></h5>
-                            <div class="card-body text-center">
-                                <h1>{{ $feeder->total_food }} kg</h1>                               
-                            </div>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTotalFood{{ $pond->id_pond }}">Edit</button>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="card h-100 p-3" style="background-color: lavender;">
+                        
+                        <!-- Bottom Section: Pemberian Pakan Manual -->
+                        <div class="card p-3" style="background-color: lavender;">
                             <h5><strong>Pemberian Pakan Manual</strong></h5>
                             <div class="card-body text-center">
                                 <div class="d-flex justify-content-center align-items-center gap-3">
@@ -113,7 +102,18 @@
                                 <p class="mt-3 fw-bold">Status Sistem: <span id="systemStatus">Berhenti</span></p>
                             </div>
                         </div>
+                    </div>  --}}
+
+                    <div class="card p-3" style="background-color: lavender;">
+                        <h5><strong>Pemberian Pakan Manual</strong></h5>
+                        <div class="card-body text-center">
+                            <div class="d-flex justify-content-center align-items-center gap-3">
+                                <button id="startBtn" class="btn btn-success px-4 py-2">Mulai</button>
+                            </div>
+                            <div id="responseMessage" class="mt-3"></div>
+                        </div>
                     </div>
+                </div>
                     
                 </div>               
 
@@ -292,11 +292,8 @@
                         <div class="card mb-3">
                             <div class="card-header bg-light fw-bold">Netralisir Air</div>
                             <div class="card-body justify-content-between align-items-center">
-                                <div class="text-center mt-3">
-                                    <div class="btn-group" role="group" aria-label="Mulai dan Berhenti">
-                                        <button class="btn btn-warning btn-sm p-4">Mulai</button>
-                                        <button class="btn btn-danger btn-sm p-4">Berhenti</button>
-                                    </div>
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-warning btn-sm py-4 px-5">Mulai</button>
                                 </div>
                                 <div class="mt-5">
                                     <p class="mb-0">Sistem netralisir air sudah diatur secara otomatis.</p>
@@ -494,5 +491,50 @@
     </script>
 
 </div>
+<script>
+function controlPump(command) {
+    fetch('/pump-control', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ command: command })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status) {
+            alert(data.status); // misalnya: "Pompa ON"
+        } else {
+            alert("Gagal: " + data.error);
+        }
+    })
+    .catch(error => {
+        alert("Terjadi kesalahan: " + error);
+    });
+}
+</script>
+<script>
+document.getElementById('startBtn').addEventListener('click', function() {
+    const button = this;
+    button.disabled = true;
+    button.innerText = "Memproses...";
+
+    fetch("{{ url('/manual-feeding') }}")
+        .then(response => response.text())
+        .then(result => {
+            document.getElementById('responseMessage').innerHTML = 
+                `<div class="alert alert-success">✅ Pakan berhasil dijalankan!</div>`;
+        })
+        .catch(error => {
+            document.getElementById('responseMessage').innerHTML = 
+                `<div class="alert alert-danger">❌ Gagal mengirim pakan: ${error}</div>`;
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerText = "Mulai";
+        });
+});
+</script>
 
 @endsection
