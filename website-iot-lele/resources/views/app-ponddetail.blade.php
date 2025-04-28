@@ -80,41 +80,40 @@
 
                         <div class="card h-100 p-3" style="background-color: lavender;">
                             <h5><strong>Status Tempat Pakan</strong></h5>
-                            <div class="card-body text-center">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <img 
                                     src="{{ asset('images/' . $imageFile) }}" 
                                     alt="Tempat Pakan" 
                                     class="img-fluid" 
                                     style="max-height: 150px;">
-                                <p class="mt-3 fw-bold">
-                                    Status: <span class="text-{{ $status === 'Kosong' ? 'danger' : 'success' }}">{{ $status }}</span>
-                                </p>
                             </div>
+                            <p class="mt-3 fw-bold text-center">
+                                Status: <span class="text-{{ $status === 'Kosong' ? 'danger' : 'success' }}">{{ $status }}</span>
+                            </p>
                         </div>
-                        
-                        <!-- Bottom Section: Pemberian Pakan Manual -->
-                        <div class="card p-3" style="background-color: lavender;">
-                            <h5><strong>Pemberian Pakan Manual</strong></h5>
-                            <div class="card-body text-center">
-                                <div class="d-flex justify-content-center align-items-center gap-3">
-                                    <button id="startBtn" class="btn btn-success px-4 py-2">Mulai</button>
-                                </div>
-                                <p class="mt-3 fw-bold">Status Sistem: <span id="systemStatus">Berhenti</span></p>
-                            </div>
-                        </div>
-                    </div>  --}}
+                    </div>
 
-                    <div class="card p-3" style="background-color: lavender;">
-                        <h5><strong>Pemberian Pakan Manual</strong></h5>
-                        <div class="card-body text-center">
-                            <div class="d-flex justify-content-center align-items-center gap-3">
-                                <button id="startBtn" class="btn btn-success px-4 py-2">Mulai</button>
+                    <div class="col-md-4">
+                        <div class="card h-100 p-3" style="background-color: lavender;">
+                            <h5><strong>Jumlah Pakan</strong></h5>
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <h1>{{ $feeder->total_food }} kg</h1>                               
+                            </div>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTotalFood{{ $pond->id_pond }}">Edit</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 p-3" style="background-color: lavender;">
+                            <h5><strong>Pemberian Pakan Manual</strong></h5>
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                    <button id="startBtn" class="btn btn-success fs-5 rounded-circle px-4 py-2" style="width: 130px; height: 130px;">Mulai</button>
+                                </div>
                             </div>
                             <div id="responseMessage" class="mt-3"></div>
                         </div>
-                    </div>
-                </div>
-                    
+                    </div>                    
                 </div>               
 
                 <div class="row mt-4">
@@ -159,7 +158,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="editFeedingForm" method="POST" action="{{ route('kolam.updatetotalfood', $feeder->id  ?? '') }}">
+                            <form id="editFeedingForm" method="POST" action="{{ route('kolam.updatetotalfood', $feeder->id  ?? '') }}#schedule">
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
@@ -292,8 +291,11 @@
                         <div class="card mb-3">
                             <div class="card-header bg-light fw-bold">Netralisir Air</div>
                             <div class="card-body justify-content-between align-items-center">
-                                <div class="text-center mt-4">
-                                    <button class="btn btn-warning btn-sm py-4 px-5">Mulai</button>
+                                <div class="text-center mt-3">
+                                    <div class="btn-group" role="group" aria-label="Mulai dan Berhenti">
+                                        <button class="btn btn-warning btn-sm p-4">Mulai</button>
+                                        <button class="btn btn-danger btn-sm p-4">Berhenti</button>
+                                    </div>
                                 </div>
                                 <div class="mt-5">
                                     <p class="mb-0">Sistem netralisir air sudah diatur secara otomatis.</p>
@@ -351,7 +353,7 @@
 
         <div class="tab-pane fade" id="allsensor" role="tabpanel" aria-labelledby="allsensor-tab">
             <!-- Filter Form -->
-            <form method="GET" action="{{ route('kolam.show', ['id_pond' => $pond->id_pond]) }}" class="mb-3">
+            <form method="GET" action="{{ route('kolam.show', ['id_pond' => $pond->id_pond]) }}#allsensor" class="mb-3">
                 <div class="row mt-4 justify-content-center d-flex">
                     <div class="col-md-3">
                         <label>Dari Tanggal</label>
@@ -400,7 +402,7 @@
         <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
             <div class="container my-3 rounded p-3" style="background-color: lavender;">
                 <h2>Pengaturan Nilai Optimal Sensor</h2>
-                <form action="{{ route('kolam.updatesensor',$settings->id_pond) }}" method="POST">
+                <form action="{{ route('kolam.updatesensor',$settings->id_pond) }}#setting" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="col-md-12">
@@ -463,78 +465,72 @@
                 </form>
             </div>
         </div>
-
     </div>
 
+    <!-- Script sessionStorage -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const tabKey = 'activeTab';
-            const tabTriggerEls = document.querySelectorAll('#myTab button[data-bs-toggle="tab"]');
+            const hash = window.location.hash;
 
-            // Restore tab from localStorage
-            const savedTabId = localStorage.getItem(tabKey);
-            if (savedTabId) {
-            const tabToShow = document.querySelector(`#${savedTabId}`);
-            if (tabToShow) {
-                const tab = new bootstrap.Tab(tabToShow);
-                tab.show();
-            }
-            }
+            if (hash) {
+                const triggerEl = document.querySelector(`button[data-bs-target="${hash}"]`);
+                if (triggerEl) {
+                    new bootstrap.Tab(triggerEl).show();
+                }
 
-            // Save tab to localStorage when clicked
-            tabTriggerEls.forEach((tabEl) => {
-                tabEl.addEventListener('shown.bs.tab', (e) => {
-                    localStorage.setItem(tabKey, e.target.id);
-                });
-            });
+                // Setelah activate tab, langsung hapus hash dari URL
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+            }
         });
     </script>
 
 </div>
-<script>
-function controlPump(command) {
-    fetch('/pump-control', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ command: command })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status) {
-            alert(data.status); // misalnya: "Pompa ON"
-        } else {
-            alert("Gagal: " + data.error);
-        }
-    })
-    .catch(error => {
-        alert("Terjadi kesalahan: " + error);
-    });
-}
-</script>
-<script>
-document.getElementById('startBtn').addEventListener('click', function() {
-    const button = this;
-    button.disabled = true;
-    button.innerText = "Memproses...";
 
-    fetch("{{ url('/manual-feeding') }}")
-        .then(response => response.text())
-        .then(result => {
-            document.getElementById('responseMessage').innerHTML = 
-                `<div class="alert alert-success">✅ Pakan berhasil dijalankan!</div>`;
+<script>
+    function controlPump(command) {
+        fetch('/pump-control', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ command: command })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status) {
+                alert(data.status); // misalnya: "Pompa ON"
+            } else {
+                alert("Gagal: " + data.error);
+            }
         })
         .catch(error => {
-            document.getElementById('responseMessage').innerHTML = 
-                `<div class="alert alert-danger">❌ Gagal mengirim pakan: ${error}</div>`;
-        })
-        .finally(() => {
-            button.disabled = false;
-            button.innerText = "Mulai";
+            alert("Terjadi kesalahan: " + error);
         });
-});
+    }
+</script>
+
+<script>
+    document.getElementById('startBtn').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerText = "Memproses...";
+
+        fetch("{{ url('/manual-feeding') }}")
+            .then(response => response.text())
+            .then(result => {
+                document.getElementById('responseMessage').innerHTML = 
+                    `<div class="alert alert-success">✅ Pakan berhasil dijalankan!</div>`;
+            })
+            .catch(error => {
+                document.getElementById('responseMessage').innerHTML = 
+                    `<div class="alert alert-danger">❌ Gagal mengirim pakan: ${error}</div>`;
+            })
+            .finally(() => {
+                button.disabled = false;
+                button.innerText = "Mulai";
+            });
+    });
 </script>
 
 @endsection
