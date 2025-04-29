@@ -11,4 +11,11 @@ class Kernel extends HttpKernel
     'verify.token' => \App\Http\Middleware\EnsureTokenIsValid::class,
     ];
 
+    protected $middlewareGroups = [
+    'web' => [
+        // ...
+        \App\Http\Middleware\VerifyCsrfToken::class,
+    ],
+];
+
 }

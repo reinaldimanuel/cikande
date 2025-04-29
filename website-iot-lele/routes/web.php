@@ -100,4 +100,4 @@ Route::post('/insert', function (Request $request) {
 // kode manual pakan 
 Route::get('/manual-feeding', [PakanController::class, 'ManualPakan']);
 
-Route::post('/feeding', [FeedingController::class, 'store'])->WithoutMiddleware(['web']);
+Route::post('/feeding', [FeedingController::class, 'store'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
