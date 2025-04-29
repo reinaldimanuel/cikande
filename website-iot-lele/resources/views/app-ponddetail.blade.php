@@ -79,7 +79,7 @@
                         @endphp
 
                         <div class="card h-100 p-3" style="background-color: lavender;">
-                            <h5><strong>Status Tempat Pakan</strong></h5>
+                            <h5 class="fw-semibold">Status Tempat Pakan</h5>
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <img 
                                     src="{{ asset('images/' . $imageFile) }}" 
@@ -87,31 +87,46 @@
                                     class="img-fluid" 
                                     style="max-height: 150px;">
                             </div>
-                            <p class="mt-3 fw-bold text-center">
-                                Status: <span class="text-{{ $status === 'Kosong' ? 'danger' : 'success' }}">{{ $status }}</span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="card h-100 p-3" style="background-color: lavender;">
-                            <h5><strong>Jumlah Pakan</strong></h5>
-                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                <h1>{{ $feeder->total_food }} kg</h1>                               
+                            <div class="bg-danger bg-opacity-10 text-danger p-2 border border-danger rounded">
+                                <div class="d-flex align-items-center">
+                                    <span class="fw-semibold">Status:&nbsp</span>
+                                    <span class="text-{{ $status === 'Kosong' ? 'danger' : 'success' }}">{{ $status }}</span>
+                                </div>                               
                             </div>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTotalFood{{ $pond->id_pond }}">Edit</button>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="card h-100 p-3" style="background-color: lavender;">
-                            <h5><strong>Pemberian Pakan Manual</strong></h5>
+                            <h5 class="fw-semibold">Jumlah Pakan</h5>
+
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                    <div class="d-flex justify-content-center align-items-center bg-success text-white rounded-circle fs-1" 
+                                        style="width: 130px; height: 130px;">
+                                        {{ $feeder->total_food }} kg
+                                    </div>       
+                                </div>                        
+                            </div>
+
+                            <button class="btn btn-outline-primary w-100 p-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#editTotalFood{{ $pond->id_pond }}">Edit</button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 p-3" style="background-color: lavender;">
+                            <h5 class="fw-semibold">Pemberian Pakan Manual</h5>
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="d-flex justify-content-center align-items-center gap-3">
                                     <button id="startBtn" class="btn btn-success fs-5 rounded-circle px-4 py-2" style="width: 130px; height: 130px;">Mulai</button>
                                 </div>
                             </div>
-                            <div id="responseMessage" class="mt-3"></div>
+                            <div class="text-center p-2 border border-primary rounded text-primary">
+                                <div class="d-flex align-items-center">
+                                    <span class="fw-semibold">Status:&nbsp;</span>
+                                    <span id="responseMessage"></span>
+                                </div>                                
+                            </div>             
                         </div>
                     </div>                    
                 </div>               
@@ -119,7 +134,7 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card p-3" style="background-color: lavender;">
-                            <h5><strong>Riwayat Pemberian Makan</strong></h5>
+                            <h5 class="fw-semibold">Riwayat Pemberian Makan</h5>
                                 <div class="card-body">
                                         <table class="table mt-3 bg-white rounded">
                                             <thead class="table-light">
@@ -368,7 +383,7 @@
 
             <!-- Sensor Readings Table -->
             <table class="table table-bordered">
-                <thead>
+                <thead class="bg-light">
                     <tr>
                         <th>Tanggal</th>
                         <th>Waktu</th>
@@ -401,7 +416,7 @@
 
         <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
             <div class="container my-3 rounded p-3" style="background-color: lavender;">
-                <h2>Pengaturan Nilai Optimal Sensor</h2>
+                <h4>Pengaturan Nilai Optimal Sensor</h4>
                 <form action="{{ route('kolam.updatesensor',$settings->id_pond) }}#setting" method="POST">
                     @csrf
                     @method('PUT')

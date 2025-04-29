@@ -9,7 +9,15 @@ return new class extends Migration
     public function up()
 {
     Schema::table('users', function (Blueprint $table) {
-        $table->string('verification_token')->nullable()->after('email_verified_at');
+        $table->string('new_email')->nullable();
+        $table->string('email_change_token')->nullable();
     });
-}   
+}
+
+public function down()
+{
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn(['new_email', 'email_change_token']);
+    });
+}
 };

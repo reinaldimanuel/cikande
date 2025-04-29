@@ -25,7 +25,8 @@
                                     </div>
                                 </div>
                                 <div class="card-body pt-0">                                    
-                                    <form class="my-4" action="{{ route('password.email') }}">            
+                                    <form class="my-4" method="POST" action="{{ route('password.email') }}">
+                                        @csrf            
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="email">Email</label>
                                             <input type="email" class="form-control" name="email" placeholder="Isi email Anda disini..." required>

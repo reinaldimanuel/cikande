@@ -22,7 +22,7 @@
         </div>
     @endif
 
-    <h1 class="mb-4 fs-3">Pengaturan Akun</h1>
+    <p class="mb-4 fs-4">Pengaturan Akun</p>
 
     <div class="row g-4">        
         <!-- Card 1 -->
