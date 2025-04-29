@@ -81,9 +81,13 @@
                                     class="img-fluid" 
                                     style="max-height: 150px;">
                             </div>
-                            <p class="mt-3 fw-bold text-center">
-                                Status: <span id="foodStatusText" class="text-success">Memuat...</span>
-                            </p>
+                            <div class="text-center p-2 border border-primary rounded text-primary">
+                                <div class="d-flex align-items-center">
+                                    <span class="fw-bold text-center">
+                                        Status: <span id="foodStatusText" class="text-success">Memuat...</span>
+                                    </span>
+                                </div>
+                            </div>  
                     </div>
                 </div>
 
@@ -132,6 +136,7 @@
                                                 <tr>
                                                     <th>Tanggal</th>
                                                     <th>Waktu</th>
+                                                    <th>Total Pakan (kg)</th>
                                                     <th>Status</th>
                                                 </tr>
                                             </thead>
@@ -140,6 +145,7 @@
                                                     <tr>
                                                         <td>{{ \Carbon\Carbon::parse($history->feeding_time)->format('d-m-y') }}</td>
                                                         <td>{{ \Carbon\Carbon::parse($history->feeding_time)->format('H:i') }}</td>
+                                                        <td>{{ $history->total_food }}</td>
                                                         <td><span class="badge p-2 bg-success">{{ $history->status }}</span></td>
                                                     </tr>
                                                 @empty
@@ -526,11 +532,11 @@
             .then(response => response.text())
             .then(result => {
                 document.getElementById('responseMessage').innerHTML = 
-                    `<div class="alert alert-success">✅ Pakan berhasil dijalankan!</div>`;
+                    `<div>✅ Pakan berhasil dijalankan!</div>`;
             })
             .catch(error => {
                 document.getElementById('responseMessage').innerHTML = 
-                    `<div class="alert alert-danger">❌ Gagal mengirim pakan: ${error}</div>`;
+                    `<div>❌ Gagal mengirim pakan: ${error}</div>`;
             })
             .finally(() => {
                 button.disabled = false;
