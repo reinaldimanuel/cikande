@@ -286,8 +286,8 @@
                             <div class="card-body justify-content-between align-items-center">
                                 <div class="text-center mt-3">
                                     <div class="btn-group" role="group" aria-label="Mulai dan Berhenti">
-                                        <button class="btn btn-warning btn-sm p-4">Mulai</button>
-                                        <button class="btn btn-danger btn-sm p-4">Berhenti</button>
+                                        <button class="btn btn-warning btn-sm p-4" onclick="controlPump('on')">Mulai</button>
+                                        <button class="btn btn-danger btn-sm p-4" onclick="controlPump('off')">Berhenti</button>
                                     </div>
                                 </div>
                                 <div class="mt-5">
