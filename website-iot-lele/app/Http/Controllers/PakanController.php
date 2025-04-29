@@ -9,7 +9,7 @@ class PakanController extends Controller
 {
     public function ManualPakan()
     {
-        $esp_ip = 'http://122.200.6.110/manual-feeding';
+        $esp_ip = 'http://122.200.6.145/manual-feeding';
         try {
         $response = Http::get($esp_ip);
         return back()->with('success', 'Pakan manual berhasil dikirim!');

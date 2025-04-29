@@ -71,30 +71,21 @@
                 <div class="row d-flex align-items-stretch">
                     <!-- Left Column: Schedule -->
                     <div class="col-md-4">
-                        @php
-                            $status = $feeder->feeder_status;
-                            $imageFile = $status === 'Kosong' 
-                                ? 'fish_food_can_red.png' 
-                                : 'fish_food_can_green.png';
-                        @endphp
-
                         <div class="card h-100 p-3" style="background-color: lavender;">
                             <h5 class="fw-semibold">Status Tempat Pakan</h5>
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <img 
-                                    src="{{ asset('images/' . $imageFile) }}" 
+                                    id="foodStatusImage"
+                                    src="{{ asset('images/fish_food_can_green.png') }}" 
                                     alt="Tempat Pakan" 
                                     class="img-fluid" 
                                     style="max-height: 150px;">
                             </div>
-                            <div class="bg-danger bg-opacity-10 text-danger p-2 border border-danger rounded">
-                                <div class="d-flex align-items-center">
-                                    <span class="fw-semibold">Status:&nbsp</span>
-                                    <span class="text-{{ $status === 'Kosong' ? 'danger' : 'success' }}">{{ $status }}</span>
-                                </div>                               
-                            </div>
-                        </div>
+                            <p class="mt-3 fw-bold text-center">
+                                Status: <span id="foodStatusText" class="text-success">Memuat...</span>
+                            </p>
                     </div>
+                </div>
 
                     <div class="col-md-4">
                         <div class="card h-100 p-3" style="background-color: lavender;">
@@ -546,6 +537,47 @@
                 button.innerText = "Mulai";
             });
     });
+</script>
+
+<script>
+// IP ESP kamu
+const espIp = 'http://122.200.6.145'; // Ganti ini dengan IP ESP kamu
+
+function updateFoodStatus() {
+    fetch(`${espIp}/cek-pakan`)
+        .then(response => response.text())
+        .then(status => {
+            const statusText = document.getElementById('foodStatusText');
+            const statusImage = document.getElementById('foodStatusImage');
+
+            if (status.includes('Penuh')) {
+                statusText.textContent = 'Penuh';
+                statusText.className = 'text-success';
+                statusImage.src = '{{ asset('images/fish_food_can_green.png') }}';
+            } else if (status.includes('Sedang')) {
+                statusText.textContent = 'Sedang';
+                statusText.className = 'text-warning';
+                statusImage.src = '{{ asset('images/fish_food_can_yellow.png') }}';
+            } else if (status.includes('Habis')) {
+                statusText.textContent = 'Habis';
+                statusText.className = 'text-danger';
+                statusImage.src = '{{ asset('images/fish_food_can_red.png') }}';
+            } else {
+                statusText.textContent = 'Tidak diketahui';
+                statusText.className = 'text-secondary';
+                statusImage.src = '{{ asset('images/fish_food_can_gray.png') }}';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching status:', error);
+        });
+}
+
+// Update setiap 3 detik
+setInterval(updateFoodStatus, 3000);
+
+// Panggil sekali saat pertama buka halaman
+updateFoodStatus();
 </script>
 
 @endsection
