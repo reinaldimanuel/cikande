@@ -69,22 +69,17 @@ class Pond extends Model
         $weeks = floor($remainingDays / 7);
         $days = $remainingDays % 7;
 
-        // Format berdasarkan kriteria
         if ($years > 0) {
-            // Tahun dan Bulan saja (abaikan minggu dan hari)
             return $years . ' tahun' . ($months > 0 ? ' ' . $months . ' bulan' : '');
         } 
         elseif ($months > 0) {
-            // Bulan dan Minggu (jika bulan ada)
             $weekPart = $weeks > 0 ? ' ' . $weeks . ' minggu' : '';
             return $months . ' bulan' . $weekPart;
         }
         elseif ($weeks > 0) {
-            // Minggu dan Hari (jika minggu ada)
             return $weeks . ' minggu' . ($days > 0 ? ' ' . $days . ' hari' : '');
         }
         else {
-            // Hanya Hari
             return $days . ' hari';
         }
     }

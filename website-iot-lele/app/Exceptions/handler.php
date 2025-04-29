@@ -9,7 +9,7 @@ class handler extends Exception
         if ($request->expectsJson()) {
             return response()->json(['message' => $exception->getMessage()], 401);
         }
-
+        
         return redirect()->guest('/auth-login');
     }
 }

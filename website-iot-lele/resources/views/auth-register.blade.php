@@ -28,22 +28,22 @@
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="name">Name</label>
                                             <input type="text" class="form-control" value="{{ old('username') }}" name="name" placeholder="Masukkan nama" required>                               
-                                        </div><!--end form-group--> 
+                                        </div> 
 
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="email">Email</label>
                                             <input type="email" class="form-control" value="{{ old('email') }}" name="email" placeholder="Masukkan email" required>                               
-                                        </div><!--end form-group--> 
+                                        </div> 
             
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="password">Password</label>                                            
                                             <input type="password" class="form-control" name="password" placeholder="Masukkan password" required>                            
-                                        </div><!--end form-group--> 
+                                        </div> 
 
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="password_confirmation">Konfirmasi Password</label>                                            
                                             <input type="password" class="form-control" name="password_confirmation" placeholder="Masukkan kembali password" required>                            
-                                        </div><!--end form-group--> 
+                                        </div> 
 
                                         @error('email')
                                             <div class="text-red-500 text-sm mb-2">{{ $message }}</div>
@@ -54,18 +54,18 @@
                                                 <div class="d-grid mt-3">
                                                     <button class="btn btn-primary" type="submit">Daftarkan <i class="fas fa-sign-in-alt ms-1"></i></button>
                                                 </div>
-                                            </div><!--end col--> 
-                                        </div> <!--end form-group-->                           
-                                    </form><!--end form-->
+                                            </div> 
+                                        </div>                           
+                                    </form>
                                     <div class="text-center">
                                         <p class="text-muted">Sudah ada akun?  <a href="/login" class="text-primary ms-2">Masuk disini!</a></p>
                                     </div>
-                                </div><!--end card-body-->
-                            </div><!--end card-->
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end card-body-->
-            </div><!--end col-->
-        </div><!--end row-->                                        
-    </div><!-- container -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>                                        
+    </div>
 @endsection

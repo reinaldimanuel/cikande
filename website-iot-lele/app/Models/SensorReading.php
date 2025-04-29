@@ -15,11 +15,11 @@ class SensorReading extends Model
     public function getStatus($value, $min, $max)
     {
         if ($value < $min) {
-            return "Rendah";  // Low
+            return "Rendah"; 
         } elseif ($value > $max) {
-            return "Tinggi";  // High
+            return "Tinggi";  
         } else {
-            return "Normal";  // Optimal
+            return "Normal";  
         }
     }
 

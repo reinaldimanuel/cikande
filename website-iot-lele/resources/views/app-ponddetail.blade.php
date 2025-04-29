@@ -143,8 +143,8 @@
                                             <tbody>
                                                 @forelse($histories as $history)
                                                     <tr>
-                                                        <td>{{ \Carbon\Carbon::parse($history->feeding_time)->format('d-m-y') }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($history->feeding_time)->format('H:i') }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($history->created_at)->format('d-m-y') }}</td>
+                                                        <td>{{ $history->jam_feeding }} : {{ $history->menit_feeding }}</td>
                                                         <td>{{ $history->total_food }}</td>
                                                         <td><span class="badge p-2 bg-success">{{ $history->status }}</span></td>
                                                     </tr>
@@ -183,22 +183,6 @@
                     </div>
                 </div>
             </div>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    const editFeedingModal = document.getElementById('editFeedingModal');
-                    editFeedingModal.addEventListener('show.bs.modal', function(event) {
-                        const button = event.relatedTarget;
-                        const idPond = button.getAttribute('data-id-pond');
-                        const feedingTime = button.getAttribute('data-feeding-time');
-
-                        const form = editFeedingModal.querySelector('#editFeedingForm');
-                        form.setAttribute('action', `/kolam/${idPond}/updatetime`);
-                        form.querySelector('#feeding_time').value = feedingTime;
-                    });
-                });
-            </script>
-
         </div>
 
         <div class="tab-pane fade show active" id="sensor" role="tabpanel" aria-labelledby="sensor-tab">
@@ -251,13 +235,11 @@
                         @php
                             $value = is_numeric($param['value']) ? $param['value'] : 0;
                             $min = is_numeric($param['min']) ? $param['min'] : 0;
-                            $max = is_numeric($param['max']) ? $param['max'] : 100; // Default to avoid errors
+                            $max = is_numeric($param['max']) ? $param['max'] : 100;
 
-                            // Calculate percentage within range
                             $percent = ($value - $min) / ($max - $min) * 100;
                             $percent = max(0, min(100, $percent));
 
-                            // Determine status and colors
                             if ($value < $min) {
                                 $status = 'Rendah';  
                                 $badgeColor = '#D32F2F'; 
@@ -269,7 +251,6 @@
                                 $badgeColor = '#FFEB3B'; 
                             }
 
-                            // Show warning icon if out of range
                             $warningIcon = ($value < $min || $value > $max) 
                                 ? '<i class="fas fa-exclamation-triangle text-danger"></i>' 
                                 : '';
