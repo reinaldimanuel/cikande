@@ -7,6 +7,12 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-4 mx-auto">
+                            @if (session('status'))
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    {{ session('status') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            @endif
                             <div class="card">
                                 <div class="card-body p-0 bg-light auth-header-box rounded-top">
                                     <div class="text-center p-3">
@@ -39,7 +45,7 @@
                                                 </div>
                                             </div><!--end col--> 
                                             <div class="col-sm-6 text-end">
-                                                <a href="/pemulihan" class="text-muted font-13"><i class="dripicons-lock"></i> Lupa password?</a>                                    
+                                                <a href="/password/pemulihan" class="text-muted font-13"><i class="dripicons-lock"></i> Lupa password?</a>                                    
                                             </div><!--end col--> 
                                         </div><!--end form-group--> 
             

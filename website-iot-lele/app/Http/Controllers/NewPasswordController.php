@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -24,6 +24,10 @@ class NewPasswordController extends Controller
             'token' => 'required',
             'email' => 'required|email',
             'password' => 'required|confirmed|min:8',
+        ], [
+            'password.required' => 'Password baru wajib diisi.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'password.min' => 'Password minimal 8 karakter.',
         ]);
 
         $status = Password::reset(
@@ -37,7 +41,7 @@ class NewPasswordController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', 'Kata sandi berhasil direset, silakan login.')
+            ? redirect()->route('login.index')->with('status', 'Kata sandi berhasil direset, silakan login.')
             : back()->withErrors(['email' => 'Reset password gagal, token atau email tidak valid.']);
     }
 }

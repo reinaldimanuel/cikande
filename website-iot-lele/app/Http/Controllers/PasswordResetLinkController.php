@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class PasswordResetLinkController extends Controller
         );
 
         return $status === Password::RESET_LINK_SENT
-            ? back()->with('status', 'Link reset kata sandi berhasil dikirim ke email Anda.')
-            : back()->withErrors(['email' => 'Kami tidak dapat menemukan pengguna dengan email tersebut.']);
+            ? back()->with('status', 'Link reset password berhasil dikirim ke email Anda.')
+            : back()->withErrors(['email' => 'Email tidak terdaftar, periksa kembali.']);
     }
 }

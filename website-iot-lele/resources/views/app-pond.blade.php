@@ -30,10 +30,10 @@
 
             <!-- Add New Pond Card -->
             <div class="col">
-                <div class="card text-center border-dashed" role="button" data-bs-toggle="modal" data-bs-target="#addPondModal">
-                    <div class="card-body">
-                        <h1 class="text-primary">+</h1>
-                        <h5 class="card-title">Tambah Kolam</h5>
+                <div class="card text-center border-dashed" style="height: 250px;" role="button" data-bs-toggle="modal" data-bs-target="#addPondModal">
+                    <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                        <h1 class="text-primary m-0">+</h1>
+                        <h5 class="card-title m-0">Tambah Kolam</h5>
                     </div>
                 </div>
             </div>
@@ -85,14 +85,6 @@
                                 <div class="mb-3">
                                     <label>Nama Kolam</label>
                                     <input type="text" class="form-control" name="name_pond" value="{{ $pond->name_pond }}" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label>Umur Ikan</label>
-                                    <input type="date" class="form-control" name="birth_fish" value="{{ $pond->birth_fish }}" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label>Jumlah Ikan</label>
-                                    <input type="number" class="form-control" name="total_fish" value="{{ $pond->total_fish }}" required>
                                 </div>
                             </div>
                             <div class="modal-footer">

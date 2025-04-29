@@ -25,30 +25,31 @@
                                     </div>
                                 </div>
                                 <div class="card-body pt-0">                                    
-                                    <form class="my-4" action="{{ route('password.email') }}">            
+                                    <form class="my-4" method="POST" action="{{ route('password.email') }}">
+                                        @csrf            
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="email">Email</label>
                                             <input type="email" class="form-control" name="email" placeholder="Isi email Anda disini..." required>
                                             @error('email') <small class="text-danger">{{ $message }}</small> @enderror                               
-                                        </div><!--end form-group-->             
+                                        </div>             
                                         
                                         <div class="form-group mb-0 row">
                                             <div class="col-12">
                                                 <div class="d-grid mt-3">
                                                     <button class="btn btn-primary" type="submit">Reset <i class="fas fa-sign-in-alt ms-1"></i></button>
                                                 </div>
-                                            </div><!--end col--> 
-                                        </div> <!--end form-group-->                           
-                                    </form><!--end form-->
+                                            </div> 
+                                        </div>                            
+                                    </form>
                                     <div class="text-center  mb-2">
                                         <p class="text-muted">Sudah ingat?  <a href="/login" class="text-primary ms-2">Kembali ke login</a></p>
                                     </div>
-                                </div><!--end card-body-->
-                            </div><!--end card-->
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end card-body-->
-            </div><!--end col-->
-        </div><!--end row-->                                        
-    </div><!-- container -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>                                        
+    </div>
 @endsection

@@ -71,47 +71,57 @@
                 <div class="row d-flex align-items-stretch">
                     <!-- Left Column: Schedule -->
                     <div class="col-md-4">
-                        @php
-                            $status = $feeder->feeder_status;
-                            $imageFile = $status === 'Kosong' 
-                                ? 'fish_food_can_red.png' 
-                                : 'fish_food_can_green.png';
-                        @endphp
-
                         <div class="card h-100 p-3" style="background-color: lavender;">
-                            <h5><strong>Status Tempat Pakan</strong></h5>
+                            <h5 class="fw-semibold">Status Tempat Pakan</h5>
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <img 
-                                    src="{{ asset('images/' . $imageFile) }}" 
+                                    id="foodStatusImage"
+                                    src="{{ asset('images/fish_food_can_green.png') }}" 
                                     alt="Tempat Pakan" 
                                     class="img-fluid" 
                                     style="max-height: 150px;">
                             </div>
-                            <p class="mt-3 fw-bold text-center">
-                                Status: <span class="text-{{ $status === 'Kosong' ? 'danger' : 'success' }}">{{ $status }}</span>
-                            </p>
-                        </div>
+                            <div class="text-center p-2 border border-primary rounded text-primary">
+                                <div class="d-flex align-items-center">
+                                    <span class="fw-bold text-center">
+                                        Status: <span id="foodStatusText" class="text-success">Memuat...</span>
+                                    </span>
+                                </div>
+                            </div>  
                     </div>
+                </div>
 
                     <div class="col-md-4">
                         <div class="card h-100 p-3" style="background-color: lavender;">
-                            <h5><strong>Jumlah Pakan</strong></h5>
+                            <h5 class="fw-semibold">Jumlah Pakan</h5>
+
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                <h1>{{ $feeder->total_food }} kg</h1>                               
+                                <div class="d-flex justify-content-center align-items-center gap-3">
+                                    <div class="d-flex justify-content-center align-items-center bg-success text-white rounded-circle fs-1" 
+                                        style="width: 130px; height: 130px;">
+                                        {{ $feeder->total_food }} kg
+                                    </div>       
+                                </div>                        
                             </div>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTotalFood{{ $pond->id_pond }}">Edit</button>
+
+                            <button class="btn btn-outline-primary w-100 p-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#editTotalFood{{ $pond->id_pond }}">Edit</button>
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="card h-100 p-3" style="background-color: lavender;">
-                            <h5><strong>Pemberian Pakan Manual</strong></h5>
+                            <h5 class="fw-semibold">Pemberian Pakan Manual</h5>
                             <div class="card-body d-flex flex-column justify-content-center align-items-center">
                                 <div class="d-flex justify-content-center align-items-center gap-3">
                                     <button id="startBtn" class="btn btn-success fs-5 rounded-circle px-4 py-2" style="width: 130px; height: 130px;">Mulai</button>
                                 </div>
                             </div>
-                            <div id="responseMessage" class="mt-3"></div>
+                            <div class="text-center p-2 border border-primary rounded text-primary">
+                                <div class="d-flex align-items-center">
+                                    <span class="fw-semibold">Status:&nbsp;</span>
+                                    <span id="responseMessage"></span>
+                                </div>                                
+                            </div>             
                         </div>
                     </div>                    
                 </div>               
@@ -119,21 +129,23 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card p-3" style="background-color: lavender;">
-                            <h5><strong>Riwayat Pemberian Makan</strong></h5>
+                            <h5 class="fw-semibold">Riwayat Pemberian Makan</h5>
                                 <div class="card-body">
                                         <table class="table mt-3 bg-white rounded">
                                             <thead class="table-light">
                                                 <tr>
                                                     <th>Tanggal</th>
                                                     <th>Waktu</th>
+                                                    <th>Total Pakan (kg)</th>
                                                     <th>Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @forelse($histories as $history)
                                                     <tr>
-                                                        <td>{{ \Carbon\Carbon::parse($history->feeding_time)->format('d-m-y') }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($history->feeding_time)->format('H:i') }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($history->created_at)->format('d-m-y') }}</td>
+                                                        <td>{{ $history->jam_feeding }} : {{ $history->menit_feeding }}</td>
+                                                        <td>{{ $history->total_food }}</td>
                                                         <td><span class="badge p-2 bg-success">{{ $history->status }}</span></td>
                                                     </tr>
                                                 @empty
@@ -171,22 +183,6 @@
                     </div>
                 </div>
             </div>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    const editFeedingModal = document.getElementById('editFeedingModal');
-                    editFeedingModal.addEventListener('show.bs.modal', function(event) {
-                        const button = event.relatedTarget;
-                        const idPond = button.getAttribute('data-id-pond');
-                        const feedingTime = button.getAttribute('data-feeding-time');
-
-                        const form = editFeedingModal.querySelector('#editFeedingForm');
-                        form.setAttribute('action', `/kolam/${idPond}/updatetime`);
-                        form.querySelector('#feeding_time').value = feedingTime;
-                    });
-                });
-            </script>
-
         </div>
 
         <div class="tab-pane fade show active" id="sensor" role="tabpanel" aria-labelledby="sensor-tab">
@@ -239,13 +235,11 @@
                         @php
                             $value = is_numeric($param['value']) ? $param['value'] : 0;
                             $min = is_numeric($param['min']) ? $param['min'] : 0;
-                            $max = is_numeric($param['max']) ? $param['max'] : 100; // Default to avoid errors
+                            $max = is_numeric($param['max']) ? $param['max'] : 100;
 
-                            // Calculate percentage within range
                             $percent = ($value - $min) / ($max - $min) * 100;
                             $percent = max(0, min(100, $percent));
 
-                            // Determine status and colors
                             if ($value < $min) {
                                 $status = 'Rendah';  
                                 $badgeColor = '#D32F2F'; 
@@ -257,7 +251,6 @@
                                 $badgeColor = '#FFEB3B'; 
                             }
 
-                            // Show warning icon if out of range
                             $warningIcon = ($value < $min || $value > $max) 
                                 ? '<i class="fas fa-exclamation-triangle text-danger"></i>' 
                                 : '';
@@ -368,7 +361,7 @@
 
             <!-- Sensor Readings Table -->
             <table class="table table-bordered">
-                <thead>
+                <thead class="bg-light">
                     <tr>
                         <th>Tanggal</th>
                         <th>Waktu</th>
@@ -401,7 +394,7 @@
 
         <div class="tab-pane fade" id="setting" role="tabpanel" aria-labelledby="setting-tab">
             <div class="container my-3 rounded p-3" style="background-color: lavender;">
-                <h2>Pengaturan Nilai Optimal Sensor</h2>
+                <h4>Pengaturan Nilai Optimal Sensor</h4>
                 <form action="{{ route('kolam.updatesensor',$settings->id_pond) }}#setting" method="POST">
                     @csrf
                     @method('PUT')
@@ -520,17 +513,58 @@
             .then(response => response.text())
             .then(result => {
                 document.getElementById('responseMessage').innerHTML = 
-                    `<div class="alert alert-success">✅ Pakan berhasil dijalankan!</div>`;
+                    `<div>✅ Pakan berhasil dijalankan!</div>`;
             })
             .catch(error => {
                 document.getElementById('responseMessage').innerHTML = 
-                    `<div class="alert alert-danger">❌ Gagal mengirim pakan: ${error}</div>`;
+                    `<div>❌ Gagal mengirim pakan: ${error}</div>`;
             })
             .finally(() => {
                 button.disabled = false;
                 button.innerText = "Mulai";
             });
     });
+</script>
+
+<script>
+// IP ESP kamu
+const espIp = 'http://122.200.6.145'; // Ganti ini dengan IP ESP kamu
+
+function updateFoodStatus() {
+    fetch(`${espIp}/cek-pakan`)
+        .then(response => response.text())
+        .then(status => {
+            const statusText = document.getElementById('foodStatusText');
+            const statusImage = document.getElementById('foodStatusImage');
+
+            if (status.includes('Penuh')) {
+                statusText.textContent = 'Penuh';
+                statusText.className = 'text-success';
+                statusImage.src = '{{ asset('images/fish_food_can_green.png') }}';
+            } else if (status.includes('Sedang')) {
+                statusText.textContent = 'Sedang';
+                statusText.className = 'text-warning';
+                statusImage.src = '{{ asset('images/fish_food_can_yellow.png') }}';
+            } else if (status.includes('Habis')) {
+                statusText.textContent = 'Habis';
+                statusText.className = 'text-danger';
+                statusImage.src = '{{ asset('images/fish_food_can_red.png') }}';
+            } else {
+                statusText.textContent = 'Tidak diketahui';
+                statusText.className = 'text-secondary';
+                statusImage.src = '{{ asset('images/fish_food_can_gray.png') }}';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching status:', error);
+        });
+}
+
+// Update setiap 3 detik
+setInterval(updateFoodStatus, 3000);
+
+// Panggil sekali saat pertama buka halaman
+updateFoodStatus();
 </script>
 
 @endsection

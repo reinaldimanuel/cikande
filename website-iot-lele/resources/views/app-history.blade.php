@@ -5,7 +5,7 @@
 <div class="container mt-3">
     <!-- Title & Search Bar -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="page-title mb-0">Daftar Kolam Terhapus</h4>
+        <p class="page-title mb-0 fs-4">Daftar Kolam Terhapus</p>
 
         <input type="text" id="searchDeactivatedPond" class="form-control rounded-pill w-50 ms-auto"
             placeholder="Cari nama kolam..." style="max-width: 300px;">
@@ -31,7 +31,7 @@
                         <td>{{ \Carbon\Carbon::parse($pond->updated_at)->format('d M Y H:i') }}</td>
                         <td>{{ $pond->deact_reason }}</td>
                         <td class="text-center">
-                            <a href="#" class="btn btn-primary btn-sm show-sensor-modal rounded"
+                            <a href="#" class="btn btn-outline-primary btn-sm show-sensor-modal rounded"
                                 data-pond-id="{{ $pond->id_pond }}"
                                 data-pond-name="{{ $pond->name_pond }}"
                                 data-fish-age="{{ $pond->history_formatted_age }}"

@@ -9,6 +9,6 @@ class FeedingHistory extends Model
 {
     use HasFactory;
 
-    protected $table = 'feeding_history'; // Table name
-    protected $fillable = ['feeding_time', 'status'];
+    protected $table = 'feeding_history'; 
+    protected $fillable = ['total_food', 'status'];
 }

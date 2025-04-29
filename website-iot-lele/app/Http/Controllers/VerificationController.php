@@ -21,6 +21,6 @@ class VerificationController extends Controller
         $user->verification_token = null;
         $user->save();
 
-        return redirect()->route('login.index')->with('success', 'Email berhasil diverifikasi! Silakan login.');
+        return redirect()->route('login.index')->with('status', 'Email berhasil diverifikasi! Silakan login.');
     }
 }

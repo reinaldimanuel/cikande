@@ -36,7 +36,6 @@ class RegisterController extends Controller
 
         Mail::to($user->email)->send(new VerifyEmail($user));
 
-        return redirect()->route('verification.notice')
-                        ->with('success', 'Registrasi berhasil! Silakan cek email untuk verifikasi.');
+        return redirect()->back()->with('status', 'Registrasi berhasil! Silakan cek email untuk verifikasi.');
     }
 }
