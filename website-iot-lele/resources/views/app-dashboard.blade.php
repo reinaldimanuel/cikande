@@ -5,7 +5,7 @@
 <div class="container mt-3">
     <h4 class="page-title">Dasbor</h4>
     <div class="row">
-        <!-- Left Column -->
+        <!-- Left Column / Sensor Graphic -->
         <div class="col-md-6 d-flex flex-column">
             <div class="card border-0 shadow-sm rounded-3 flex-grow-1 h-100">
                 <div class="card-header bg-light border-bottom py-3 d-flex justify-content-between align-items-center">
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <!-- Right Column -->
+        <!-- Right Column / Pie Chart & List-->
         <div class="col-md-6 d-flex flex-column" style="height: 100%;">
             <!-- Wrapper Flex -->
             <div class="d-flex flex-column h-100">

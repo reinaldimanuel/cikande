@@ -11,7 +11,7 @@ use View;
 class HistoryController extends Controller
 {
     public function deactivatedPonds(){
-        
+
         $deactivatedPonds = Pond::where('status_pond', 'Deactive')
         ->orderBy('updated_at', 'desc')
         ->get()
@@ -33,10 +33,10 @@ class HistoryController extends Controller
     }
 
     public function getAverageSensor(Request $request, $id_pond)
-    {
+    {   
+
         $range = $request->query('range'); // e.g., '1m', '3m', '6m', '1y'
 
-        // Ambil waktu sensor terakhir
         $lastReading = SensorReading::where('id_pond', $id_pond)->latest('created_at')->first();
 
         if (!$lastReading) {
@@ -45,7 +45,6 @@ class HistoryController extends Controller
 
         $endDate = $lastReading->created_at;
 
-        // Hitung start date berdasarkan range
         switch ($range) {
             case '1':
                 $startDate = Carbon::parse($endDate)->subMonth();
@@ -63,7 +62,6 @@ class HistoryController extends Controller
                 return response()->json(['message' => 'Range tidak valid'], 400);
         }
 
-        // Ambil data rata-rata sensor dari periode tsb
         $average = SensorReading::where('id_pond', $id_pond)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('

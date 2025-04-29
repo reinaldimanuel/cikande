@@ -47,7 +47,7 @@ class PondController extends Controller
         $settings = SensorSettings::where('id_pond', $id_pond)->first();
 
         //Fetch Feeding Schedule and Histories
-        $histories = FeedingHistory::where('id_pond', $id_pond)->orderBy('feeding_time', 'desc')->get();
+        $histories = FeedingHistory::where('id_pond', $id_pond)->orderBy('created_at', 'desc')->get();
         $feeder = Feeder::where('id_pond', $id_pond)->first();
 
         return view('app-ponddetail', compact('pond', 'latestReadings', 'sensorReadings', 'settings','histories','feeder', 'startDate', 'endDate'));
