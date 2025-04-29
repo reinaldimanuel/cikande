@@ -10,5 +10,5 @@ class Feeder extends Model
     use HasFactory;
 
     protected $table = 'feeder'; // Table name
-    protected $fillable = ['total_food' ,'feeder_status'];
+    protected $fillable = ['total_food' ,'feeder_status','id_pond'];
 }

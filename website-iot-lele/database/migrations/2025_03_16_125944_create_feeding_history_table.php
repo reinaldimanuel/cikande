@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up()
 {
-    Schema::create('feeding_history', function (Blueprint $table) {
+   Schema::create('feeding_history', function (Blueprint $table) {
         $table->id();
-        $table->bigInteger('id_pond');
+        $table->unsignedBigInteger('id_pond');
         $table->integer('jam_feeding');
         $table->integer('menit_feeding');
-        $table->float('total_food');
-        $table->string('status'); // Default is "Terlaksana"
+        $table->float('total_food', 8, 2);
+        $table->string('status');
         $table->timestamps();
     });
 }

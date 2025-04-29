@@ -14,7 +14,6 @@ use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\PakanController;
 use App\Http\Controllers\PumpController;
-use App\Http\Controllers\FeedingController;
 
 Route::post('/pump-control', [PumpController::class, 'control']);
 
@@ -99,5 +98,3 @@ use App\Models\SensorData;
 
 // kode manual pakan 
 Route::get('/manual-feeding', [PakanController::class, 'ManualPakan']);
-
-Route::post('/feeding', [FeedingController::class, 'store'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);

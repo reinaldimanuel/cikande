@@ -8,15 +8,23 @@ use Illuminate\Support\Facades\Log;
 class FeedingController extends Controller
 {
     public function store(Request $request)
-    {
-        Log::info('Feeding Request:', $request->all());
-        FeedingHistory::create([
-        'id_pond'=>$request->input('idpond'),
-        'jam_feeding' => $request->input('jam'),
-        'menit_feeding' => $request->input('menit'),
-        'total_food' => $request->input('berat'),
-        'status' => $request->input('status'),
-        ]);
-        return response()->json(['message' => 'Feeding log inserted successfully.']);
-    }
+        {
+            $validated = $request->validate([
+                'id_pond' => 'required|integer',
+                'jam' => 'required|integer',
+                'menit' => 'required|integer',
+                'berat' => 'required|numeric',
+                'status' => 'required|string',
+            ]);
+
+            FeedingHistory::create([
+                'id_pond' => $validated['id_pond'],
+                'jam_feeding' => $validated['jam'],
+                'menit_feeding' => $validated['menit'],
+                'total_food' => $validated['berat'],
+                'status' => $validated['status'],
+            ]);
+
+            return response()->json(['message' => 'Feeding log inserted successfully.']);
+        }
 }
