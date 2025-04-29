@@ -76,22 +76,22 @@ Route::get('/', function () {
         return redirect('/login');
     })->name('logout');
 
-
+    
 use Illuminate\Http\Request;
 use App\Models\SensorData;
 
-Route::post('/insert', function (Request $request) {
-    $validated = $request->validate([
-        'suhu' => 'required|numeric',
-        'ph' => 'required|numeric',
-        'tds' => 'required|numeric',
-        'tinggi' => 'required|numeric',
-    ]);
+// Route::post('/insert', function (Request $request) {
+//     $validated = $request->validate([
+//         'suhu' => 'required|numeric',
+//         'ph' => 'required|numeric',
+//         'tds' => 'required|numeric',
+//         'tinggi' => 'required|numeric',
+//     ]);
 
-    SensorData::create($validated);
+//     SensorData::create($validated);
 
-    return response()->json(['status' => 'Data berhasil disimpan']);
-})->withoutMiddleware(['web']);
+//     return response()->json(['status' => 'Data berhasil disimpan']);
+// })->withoutMiddleware(['web']);
 
 // kode manual pakan 
 Route::get('/manual-feeding', [PakanController::class, 'ManualPakan']);

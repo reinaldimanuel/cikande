@@ -15,8 +15,8 @@ class PumpController extends Controller
             return response()->json(['error' => 'Perintah tidak valid'], 400);
         }
 
-        $espIp = 'http://122.200.6.82'; // Ganti dengan IP ESP kamu
-        $url = $espIp . '/pump/' . $command;
+        $espIp = 'http://122.200.6.140'; // Ganti dengan IP ESP kamu
+        $url = $espIp . '/pump/' . $command; 
 
         try {
             $response = Http::timeout(3)->get($url);
