@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Pond;
 use App\Models\SensorReading;
 use App\Models\SensorSettings;
-use App\Models\FeedingSchedule;
 use App\Models\FeedingHistory;
 use App\Models\Feeder;
 use View;
@@ -48,11 +47,10 @@ class PondController extends Controller
         $settings = SensorSettings::where('id_pond', $id_pond)->first();
 
         //Fetch Feeding Schedule and Histories
-        $schedules = FeedingSchedule::where('id_pond', $id_pond)->orderBy('feeding_time')->get();
         $histories = FeedingHistory::where('id_pond', $id_pond)->orderBy('feeding_time', 'desc')->get();
         $feeder = Feeder::where('id_pond', $id_pond)->first();
 
-        return view('app-ponddetail', compact('pond', 'latestReadings', 'sensorReadings', 'settings','schedules','histories','feeder', 'startDate', 'endDate'));
+        return view('app-ponddetail', compact('pond', 'latestReadings', 'sensorReadings', 'settings','histories','feeder', 'startDate', 'endDate'));
     }
 
     public function store(Request $request) {

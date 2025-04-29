@@ -2,17 +2,19 @@
 
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\PondController;
 use App\Http\Controllers\LoginController;  
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Auth; 
-use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\NewPasswordController;
+use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\PakanController;
 use App\Http\Controllers\PumpController;
+use App\Http\Controllers\FeedingController;
 
 Route::post('/pump-control', [PumpController::class, 'control']);
 
@@ -54,7 +56,7 @@ Route::get('/', function () {
         Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
         Route::get('/verify-email/{token}', [VerificationController::class, 'verify'])->name('verification.verify');
     // Forgot Password
-        Route::get('password/forgot', [PasswordResetLinkController::class, 'showLinkRequestForm'])->name('password.request');
+        Route::get('password/pemulihan', [PasswordResetLinkController::class, 'showLinkRequestForm'])->name('password.request');
         Route::post('password/email', [PasswordResetLinkController::class, 'sendResetLinkEmail'])->name('password.email');
     // New Password Reset
         Route::get('password/reset/{token}', [NewPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -63,8 +65,10 @@ Route::get('/', function () {
 //Section Pengaturan Akun
     Route::middleware(['auth','verified'])->group(function () {
         Route::get('/pengaturan', function () {return view('app-accset');});
+        Route::get('/pengaturan', [ProfileController::class, 'index'])->name('settings.index');
         Route::post('/pengaturan/password', [ProfileController::class, 'updatePassword'])->name('settings.password');
         Route::post('/pengaturan/email', [ProfileController::class, 'updateEmail'])->name('settings.email');
+        Route::get('/verify-new-email/{token}', [ProfileController::class, 'verifyNewEmail'])->name('verify-new-email');
         Route::post('/pengaturan/nama', [ProfileController::class, 'updateName'])->name('settings.name');
     });
 
@@ -95,3 +99,5 @@ Route::post('/insert', function (Request $request) {
 
 // kode manual pakan 
 Route::get('/manual-feeding', [PakanController::class, 'ManualPakan']);
+
+Route::post('/feeding', [FeedingController::class, 'store'])->WithoutMiddleware(['web']);

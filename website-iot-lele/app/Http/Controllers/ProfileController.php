@@ -2,12 +2,22 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Mail\VerifyNewEmail;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyEmail;
 
 class ProfileController extends Controller
 {
+    public function index(Request $request) {
+        return view('app-accset');
+    }
+
     public function updatePassword(Request $request)
     {
         $request->validate([
@@ -39,10 +49,30 @@ class ProfileController extends Controller
         ]);
 
         $user = auth()->user();
-        $user->email = $request->email;
+
+        if (!$user instanceof User) {
+            abort(403, 'Unauthorized');
+        }
+        
+        $user->new_email = $request->email;
+        $user->email_change_token = Str::uuid();
+        $user->save();
+        
+        Mail::to($user->new_email)->send(new VerifyNewEmail($user));
+
+        return back()->with('status', 'Link konfirmasi telah dikirim ke alamat email baru. Silakan cek!');
+    }
+
+    public function verifyNewEmail($token)
+    {
+        $user = User::where('email_change_token', $token)->firstOrFail();
+
+        $user->email = $user->new_email;
+        $user->new_email = null;
+        $user->email_change_token = null;
         $user->save();
 
-        return back()->with('status', 'Email berhasil diperbarui!');
+        return redirect()->route('settings.index')->with('status', 'Email berhasil diperbarui!');
     }
 
     public function updateName(Request $request)

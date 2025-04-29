@@ -7,6 +7,12 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-4 mx-auto">
+                            @if (session('status'))
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    {{ session('status') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            @endif
                             <div class="card">
                                 <div class="card-body p-0 bg-light auth-header-box rounded-top">
                                     <div class="text-center p-3">

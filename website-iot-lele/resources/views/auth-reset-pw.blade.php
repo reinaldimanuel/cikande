@@ -25,26 +25,25 @@
                                     </div>
                                 </div>
                                 <div class="card-body pt-0">                                    
-                                    <form class="my-4" action="{{ route('password.update') }}"> 
+                                    <form class="my-4" method="POST" action="{{ route('password.update') }}"> 
                                         @csrf           
-
                                         <input type="hidden" name="token" value="{{ $token }}">
 
                                         <div class="form-group mb-2">
                                             <label>Email</label>
-                                            <input type="email" name="email" class="form-control" value="{{ $email ?? old('email') }}" required>
+                                            <input type="email" name="email" class="form-control" value="{{ $email ?? old('email') }}" readonly required>
                                             @error('email') <small class="text-danger">{{ $message }}</small> @enderror
                                         </div>
 
                                         <div class="form-group mb-2">
                                             <label class="form-label"   >Password</label>                                            
-                                            <input type="password" class="form-control" name="password" placeholder="Masukkan password">    
-                                            @error('password') <small class="text-danger">{{ $message }}</small> @enderror                        
+                                            <input type="password" class="form-control" name="password" placeholder="Masukkan password">                          
                                         </div><!--end form-group--> 
 
                                         <div class="form-group mb-2">
                                             <label class="form-label">Konfirmasi Password</label>                                            
-                                            <input type="password" class="form-control" name="password_confirmation" placeholder="Masukkan kembali password">                            
+                                            <input type="password" class="form-control" name="password_confirmation" placeholder="Masukkan kembali password"> 
+                                            @error('password') <small class="text-danger">{{ $message }}</small> @enderror                             
                                         </div><!--end form-group--> 
             
                                         <div class="form-group mb-0 row">
