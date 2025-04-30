@@ -10,19 +10,23 @@ class SensorDataController extends Controller
     {
         // Validasi input
         $validated = $request->validate([
+            'id_pond' => 'required|integer',
             'ph' => 'required|numeric',
+            'temperature' => 'required|numeric',
             'tds' => 'required|numeric',
-            'suhu' => 'required|numeric',
-            'tinggi' => 'required|numeric',
+            'conductivity' => 'required|numeric',
+            'salinity' => 'required|numeric',
         ]);
-
-        // Simpan data ke database
+        
         $sensorData = new SensorData();
+        $sensorData->id_pond = $validated['id_pond'];
         $sensorData->ph = $validated['ph'];
+        $sensorData->temperature = $validated['temperature'];
         $sensorData->tds = $validated['tds'];
-        $sensorData->suhu = $validated['suhu'];
-        $sensorData->tinggi = $validated['tinggi'];
+        $sensorData->conductivity = $validated['conductivity'];
+        $sensorData->salinity = $validated['salinity'];
         $sensorData->save();
+        
 
         return response()->json(['message' => 'Data berhasil disimpan'], 200);
     }

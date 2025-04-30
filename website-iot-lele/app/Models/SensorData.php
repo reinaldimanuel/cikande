@@ -9,8 +9,17 @@ class SensorData extends Model
 {
     use HasFactory;
 
-    protected $table = 'sensor_data';
+    protected $table = 'sensor_readings';
 
-    protected $fillable = ['suhu', 'ph', 'tds', 'tinggi'];
+
+    protected $fillable = [
+        'id_pond',
+        'ph',
+        'temperature',
+        'tds',
+        'conductivity',
+        'salinity',
+    ];
+    public $timestamps = true;    
 }
 
